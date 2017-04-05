@@ -1,0 +1,102 @@
+.thp-badge {
+    display: inline-block;
+    vertical-align: top;
+    position: relative;
+    margin-right: 1rem;
+}
+
+.thp-badge img {
+    width: 50px;
+    height: auto;
+}
+
+.thp-badge:before {
+    content: "";
+    border: solid;
+    border-color: #333 transparent;
+    border-width: 6px 6px 0 6px;
+    bottom: 60px;
+    content: "";
+    left: 50%;
+    position: absolute;
+    z-index: 99;
+    display: none;
+    opacity: 0.8;
+}
+
+.thp-badge:after {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: 66px;
+    left: 0px;
+    display: none;
+    background: #333;
+    color: white;
+    padding: 1rem;
+    z-index: 99;
+    border-radius: 0.75rem;
+    opacity: 0.8;
+    min-width: 6rem;
+}
+
+.thp-badge:hover:before, .thp-badge:hover:after {
+    display: block;
+}
+
+ul.thp-chart-colors li {
+    line-height: 1.4rem;
+}
+
+ul.thp-chart-colors label {
+    display: block;
+}
+
+.thp-points-list {
+    list-style: none;
+}
+
+.thp-points-list li {
+    display: inline-block;
+    font-size: 1.3rem;
+    line-height: 3rem;
+    padding-right: 1rem;
+}
+
+.thp-points-list li span {
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.thp-points-list li .thp-points-icon:before {
+    content: '\2022';
+    font-size: 4rem;
+    display: block;
+    position: relative;
+}
+
+.thp-total-points {
+    display: block;
+    font-weight: bold;
+}
+
+.thp-total-points .thp-points-icon {
+    display: none;
+}
+
+.thp-chart-container {
+    float: left;
+    width: 70%;
+    min-height: 500px;
+    margin-left: 3%;
+    margin-right: 2%;
+}
+
+label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+}
+
+.thp-gravatar {
+    width: 20%;
+}
