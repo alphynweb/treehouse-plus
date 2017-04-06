@@ -23,6 +23,7 @@ require_once $plugin_dir . 'class/badge.php';
 require_once $plugin_dir . 'class/stage.php';
 require_once $plugin_dir . 'class/points.php';
 require_once $plugin_dir . 'class/settings.php';
+require_once $plugin_dir . 'class/widget.php';
 
 $thp_settings = new ThpSettings();
 
@@ -100,4 +101,11 @@ function mw_enqueue_color_picker( $hook_suffix ) {
     // first check that $hook_suffix is appropriate for your admin page
     wp_enqueue_style( 'wp-color-picker' );
     wp_enqueue_script( 'my-script-handle', plugins_url( 'scripts/color-picker.js', __FILE__ ), array ( 'wp-color-picker' ), false, true );
+}
+
+// Widget
+add_action( 'widgets_init', 'register_thp_widget' );
+
+function register_thp_widget() {
+    register_widget( 'Thp_Widget' );
 }

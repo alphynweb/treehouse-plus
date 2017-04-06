@@ -94,7 +94,7 @@ class ThpUser
     }
 
     public function render_name() {
-        echo "<h1>" . $this->get_name() . "</h1>";
+        echo "<h2>" . $this->get_name() . "</h2>";
     }
 
     public function render_gravatar() {
@@ -105,16 +105,26 @@ class ThpUser
         <?php
         }
 
-    public function render_badges() {
+    public function render_badges( $num = null ) {
+        $count = 0;
         echo "<ul>";
         foreach ( $this->badgeList as $badge ) {
             $badge->render();
+            // Specific number of badges passed through to display
+            $count ++;
+            if ( $count === ( int ) $num ) {
+                break;
+            }
         }
         echo "</ul>";
     }
 
-    public function render_points() {
-        $thp_points_display = get_option( 'thp_points_display' ) ? get_option( 'thp_points_display' ) : "list";
+    public function render_points( $display = null ) {
+        if ( !$display ) {
+            $thp_points_display = get_option( 'thp_points_display' ) ? get_option( 'thp_points_display' ) : "list";
+        } else {
+            $thp_points_display = "list";
+        }
         if ( $thp_points_display === "list" ) {
             echo '<h2 class="thp-total-points">' . $this->pointsTotal->get_name() . ' (' . $this->pointsTotal->get_points() . ')' . '</h2>';
             echo '<ul class="thp-points-list">';
@@ -129,6 +139,9 @@ class ThpUser
 
     protected function render_points_chart( $chart_type ) {
         ?>
+
+        <h2 class="thp-total-points"><?php echo $this->pointsTotal->get_name() . " (" . $this->pointsTotal->get_points() . ")"; ?></h2>
+        <div id="thpPointsChart" class="thp-chart"></div>
 
         <script>
             // Load the Visualization API and the corechart package.
@@ -281,8 +294,7 @@ class ThpUser
 
         </script>
 
-        <h2 class="thp-total-points"><?php echo $this->pointsTotal->get_name() . " (" . $this->pointsTotal->get_points() . ")"; ?></h2>
-        <div id="thpPointsChart" class="thp-chart"></div>
+
 
         <?php
     }
@@ -297,7 +309,7 @@ class ThpUser
 
     public function get_profile_name() {
         return $this->user_data->profile_name;
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                }
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                }
 
     public function get_name() {
         return $this->name;
@@ -326,7 +338,7 @@ class ThpUser
         }
 
         $this->badgeList = $badges;
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                }
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                }
 
     protected function set_points() {
         $points_list = [];
