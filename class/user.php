@@ -195,7 +195,7 @@ class ThpUser
     protected function render_points_chart( $chart_type ) {
         ?>
 
-        <h2 class="thp-total-points"><?php echo $this->pointsTotal->get_name() . " (" . $this->pointsTotal->get_points() . ")"; ?></h2>
+        <h2 class="thp-total-points"><?php echo $this->points_total->get_name() . " (" . $this->points_total->get_points() . ")"; ?></h2>
         <div id="thpPointsChart" class="thp-chart"></div>
 
         <script>
