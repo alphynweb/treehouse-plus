@@ -47,10 +47,10 @@ class ThpSettings
             $this->thp_user   = new ThpUser( $thp_user, true );
             $user_points_list = $this->thp_user->get_points_list();
             // Loop through existing user points list and set the colours
-            foreach ($user_points_list as $points) {
-                $name = $points->get_name();
-                $color = isset($thp_chart_colors[$name]) ? $thp_chart_colors[$name] : '#0000ff';
-                $points->set_color($color);
+            foreach ( $user_points_list as $points ) {
+                $name  = $points->get_name();
+                $color = isset( $thp_chart_colors[ $name ] ) ? $thp_chart_colors[ $name ] : '#0000ff';
+                $points->set_color( $color );
             }
             $this->thp_user->save_data();
         }
@@ -60,27 +60,20 @@ class ThpSettings
 
     public function thp_display_chart_colors_fields( $args ) {
         // Loop through points and display a color picker field for each one
-        $pointsList       = $this->thp_user->get_points_list();
-        $thp_chart_colors = get_option( 'thp_chart_colors' );
+        $pointsList = $this->thp_user->get_points_list();
         echo '<ul class="thp-chart-colors">';
         foreach ( $pointsList as $points ):
-            $points_name = $points->get_name();
-            if ( strtolower( $points_name ) !== "total" ):
-                $input_name = "thp_chart_colors[" . $points_name . "]";
-                if ( $thp_chart_colors ) {
-                    $points_color = array_key_exists( $points_name, $thp_chart_colors ) ? $thp_chart_colors[ $points_name ] : '#0000ff';
-                } else {
-                    $points_color = '#0000ff';
-                }
-                ?>
+            $points_name  = $points->get_name();
+            $input_name   = "thp_chart_colors[" . $points_name . "]";
+            $points_color = $points->get_color();
+            ?>
 
-                <li>
-                    <label for="<?php echo $input_name; ?>"><?php echo $points_name; ?></label>
-                    <input type="text" class="thp-color-picker" value="<?php echo $points_color; ?>" name="<?php echo $input_name; ?>" data-default-color="#fefefe" />
-                </li>
+            <li>
+                <label for="<?php echo $input_name; ?>"><?php echo $points_name; ?></label>
+                <input type="text" class="thp-color-picker" value="<?php echo $points_color; ?>" name="<?php echo $input_name; ?>" data-default-color="#0000ff" />
+            </li>
 
-                <?php
-            endif;
+            <?php
         endforeach;
         echo '</ul>';
     }
