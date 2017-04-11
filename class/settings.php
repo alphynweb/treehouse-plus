@@ -100,7 +100,7 @@ class ThpSettings
                 } else {
                     // No error
                     // Save new user info to db
-                    $this->thp_user->save_user_data();
+                    $this->thp_user->save_data();
                     $type    = 'updated';
                     $message = __( 'Your profile has been updated', 'treehouse-plus' );
                 }
@@ -190,6 +190,37 @@ class ThpSettings
         <?php
     }
 
+    public function thp_display_badge_save_files_field() {
+        // Checkbox to save the badges as resized files to the local filesystem
+        ?>
+
+        <input type="checkbox" name="thp_badge_save_files" />
+
+        <?php
+    }
+
+    public function thp_badge_save_files_callback() {
+        if ( isset( $_POST[ 'thp_badge_save_files' ] ) ) {
+            // Resize and save badges      
+            if ( get_option( 'thp_user' ) ) {
+                $thp_user       = get_option( 'thp_user' );
+                $this->thp_user = new ThpUser( $thp_user, true );
+                $this->thp_user->save_badges();
+
+                $message = 'Badges saved successfully';
+                $type    = 'updated';
+
+                if ( !empty( $this->thp_user->get_error() ) ) {
+                    // Error with creating user info
+                    $message = __( $this->thp_user->get_error(), 'treehouse-plus' );
+                    $type    = 'error';
+                }
+                
+                add_settings_error( 'thp_badge_save_files', 'thp_badge_save_files', $message, $type );
+            }
+        }
+    }
+
     public function thp_display_points_display_field() {
         $option = get_option( 'thp_points_display' );
         ?>
@@ -203,7 +234,7 @@ class ThpSettings
         </select>
 
         <?php
-    }
+}
 
     protected function thp_display_options() {
         // Display tabs
@@ -240,12 +271,6 @@ class ThpSettings
                     }
                     break;
                 case "points";
-//                    settings_fields( 'thp_points_settings_page' );
-////                    do_settings_sections( 'thp_points_settings_page' );
-//                    do_settings_fields( 'thp_points_settings_page', 'thp_points_settings_section' );
-//                    do_settings_fields( 'thp_points_settings_page', 'thp_chart_colors_section' );
-//                    submit_button( 'Save Points Settings' );
-//                    $this->thp_user->render_points();
                     $this->display_points_settings_page();
                     break;
                 default:
@@ -291,9 +316,7 @@ class ThpSettings
             // If it is, then create new user class from it
             if ( get_option( 'thp_user' ) ) {
                 $thp_user       = get_option( 'thp_user' );
-                $thp_user_data  = $thp_user[ 'user_data' ];
-                $this->thp_user = new ThpUser( $thp_user_data );
-
+                $this->thp_user = new ThpUser( $thp_user, true );
 
                 $this->thp_display_options();
             } else {

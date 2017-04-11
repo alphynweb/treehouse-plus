@@ -6,25 +6,74 @@ if ( !defined( 'ABSPATH' ) ) {
 class ThpUser
 {
 
-    protected $badgeList;
-    protected $stageList;
-    protected $pointsTotal;
-    protected $pointsList;
-    protected $user_data;
+    protected $name;
+    protected $profile_name;
+    protected $profile_url;
+    protected $gravatar_url;
+    protected $gravatar_hash;
+    protected $badge_list;
+    protected $stage_list;
+    protected $points_list;
+    protected $points_total;
+    protected $data;
     protected $error;
 
-    function __construct( $user_data ) {
-        $this->user_data = $user_data;
-        $this->name      = $user_data->name;
-        $this->set_badgeList();
-        $this->set_stageList();
-        $this->set_points();
+    function __construct( $data, $use_db = false ) {
+        $this->data = $data;
+
+        if ( $use_db ) {
+            // If user is already in db
+            $this->name          = $this->data['name'];
+            $this->profile_name  = $this->data['profile_name'];
+            $this->profile_url   = $this->data['profile_url'];
+            $this->gravatar_url  = $this->data['gravatar_url'];
+            $this->gravatar_hash = $this->data['gravatar_hash'];
+            $this->badge_list    = maybe_unserialize( $this->data['badge_list'] );
+            $this->stage_list    = maybe_unserialize( $this->data['stage_list'] );
+            $this->points_list   = maybe_unserialize( $this->data['points_list'] );
+            $this->points_total  = maybe_unserialize( $this->data['points_total'] );
+            $t = 0;
+        } else {
+            // If new user (getting info from Treehouse json feed)
+            $this->name          = $this->data->name;
+            $this->profile_name  = $this->data->profile_name;
+            $this->profile_url   = $this->data->profile_url;
+            $this->gravatar_url  = $this->data->gravatar_url;
+            $this->gravatar_hash = $this->data->gravatar_hash;
+            $this->set_badge_list();
+            $this->set_stage_list();
+            $this->set_points_list(); // Will also set points total
+        }
+
+    }
+
+    public function save_badges() {
+        // Downloads badges, resizes them and saves them to the wp-uploads directory
+        // path (filesystem path)
+        // url (http url)
+        // subdir
+        // basedir
+        // baseurl
+        // error
+
+        $count = 0; // Todo - testing with 10 badges - change to all badges once working
+        foreach ( $this->badge_list as $badge ) {
+            $badge->resize();
+            $badge->save();
+//            $count++;
+//            if ( $count === 10 ) {
+//                break;
+//            }
+        }
+
+        $this->save_data();
+
     }
 
     public function sort_badges( $thp_badge_sort ) {
         switch ( $thp_badge_sort ) {
             case "earned date":
-                usort( $this->badgeList, function($badge_a, $badge_b) {
+                usort( $this->badge_list, function($badge_a, $badge_b) {
                     $date_a = $badge_a->get_earned_date();
                     $date_b = $badge_b->get_earned_date();
 
@@ -36,7 +85,7 @@ class ThpUser
                 } );
                 break;
             case "earned date reverse":
-                usort( $this->badgeList, function($badge_a, $badge_b) {
+                usort( $this->badge_list, function($badge_a, $badge_b) {
                     $date_a = $badge_a->get_earned_date();
                     $date_b = $badge_b->get_earned_date();
 
@@ -48,7 +97,7 @@ class ThpUser
                 } );
                 break;
             case "name":
-                usort( $this->badgeList, function($badge_a, $badge_b) {
+                usort( $this->badge_list, function($badge_a, $badge_b) {
                     $name_a = strtolower( $badge_a->get_name() );
                     $name_b = strtolower( $badge_b->get_name() );
 
@@ -60,7 +109,7 @@ class ThpUser
                 } );
                 break;
             case "name reverse":
-                usort( $this->badgeList, function($badge_a, $badge_b) {
+                usort( $this->badge_list, function($badge_a, $badge_b) {
                     $name_a = strtolower( $badge_a->get_name() );
                     $name_b = strtolower( $badge_b->get_name() );
 
@@ -72,7 +121,7 @@ class ThpUser
                 } );
                 break;
             case "Stage":
-                usort( $this->badgeList, function($badge_a, $badge_b) {
+                usort( $this->badge_list, function($badge_a, $badge_b) {
                     $date_a = $badge_a->get_earned_date();
                     $date_b = $badge_b->get_earned_date();
 
@@ -86,35 +135,41 @@ class ThpUser
         }
         }
 
-    public function save_user_data() {
-        $options[ 'user_data' ] = $this->user_data; // Treehouse JSON data
-        $options[ 'updated' ]   = time();
+    public function save_data() {
+        //$options[ 'user_data' ]  = $this->user_data; // Treehouse JSON data
+        $options[ 'name' ]         = $this->name;
+        $options[ 'profile_name' ] = $this->profile_name;
+        $options[ 'profile_url' ]    = $this->profile_url;
+        $options[ 'gravatar_url' ]   = $this->gravatar_url;
+        $options[ 'gravatar_hash' ]  = $this->gravatar_hash;
+        $options[ 'stage_list' ]   = maybe_serialize( $this->stage_list );
+        $options[ 'points_total' ] = maybe_serialize( $this->points_total );
+        $options[ 'points_list' ]  = maybe_serialize( $this->points_list );
+        $options[ 'badge_list' ]   = maybe_serialize( $this->badge_list );
+        $options[ 'updated' ]      = time();
+        //$options[ 'json_feed' ]    = $this->data;
 
         update_option( 'thp_user', $options );
     }
 
     public function render_name() {
-        echo "<h2>" . $this->get_name() . "</h2>";
+        echo "<h2>" . $this->name . "</h2>";
     }
 
     public function render_gravatar() {
         ?>
         <div class="thp-gravatar">
-            <img src="<?php echo $this->user_data->gravatar_url; ?>" />
+            <img src="<?php echo $this->gravatar_url; ?>" />
         </div>
         <?php
         }
 
     public function render_badges( $num = null ) {
-        $count = 0;
+        $badge_list = $this->badge_list;
+
         echo "<ul>";
-        foreach ( $this->badgeList as $badge ) {
+        foreach ( $badge_list as $badge ) {
             $badge->render();
-            // Specific number of badges passed through to display
-            $count ++;
-            if ( $count === ( int ) $num ) {
-                break;
-            }
         }
         echo "</ul>";
     }
@@ -126,9 +181,9 @@ class ThpUser
             $thp_points_display = "list";
         }
         if ( $thp_points_display === "list" ) {
-            echo '<h2 class="thp-total-points">' . $this->pointsTotal->get_name() . ' (' . $this->pointsTotal->get_points() . ')' . '</h2>';
+            echo '<h2 class="thp-total-points">' . $this->points_total->get_name() . ' (' . $this->points_total->get_points() . ')' . '</h2>';
             echo '<ul class="thp-points-list">';
-            foreach ( $this->pointsList as $points ) {
+            foreach ( $this->points_list as $points ) {
                 $points->render();
             }
             echo "</ul>";
@@ -163,7 +218,7 @@ class ThpUser
                 data.addRows([
         <?php
         $title = "";
-        foreach ( $this->pointsList as $points ) {
+        foreach ( $this->points_list as $points ) {
             if ( strtolower( $points->get_name() ) !== "total" ) {
                 echo "['" . $points->get_name() . "', " . $points->get_points() . ", '" . $points->get_color() . "'],";
             }
@@ -300,7 +355,7 @@ class ThpUser
     }
 
     public function render_stages() {
-        foreach ( $this->stageList as $stage ) {
+        foreach ( $this->stage_list as $stage ) {
             $stage->render();
         }
     }
@@ -308,15 +363,15 @@ class ThpUser
 // Getters
 
     public function get_profile_name() {
-        return $this->user_data->profile_name;
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                }
+        return $this->profile_name;
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                }
 
     public function get_name() {
         return $this->name;
     }
 
-    public function get_badgeList() {
-        return $this->badgeList;
+    public function get_badge_list() {
+        return $this->badge_list;
     }
 
     public function get_error() {
@@ -324,42 +379,44 @@ class ThpUser
     }
 
     public function get_points_list() {
-        return $this->pointsList;
+        return $this->points_list;
     }
 
 // Setters
 
-    protected function set_badgeList() {
-        $badges = array ();
-
-        foreach ( $this->user_data->badges as $badge ) {
+    protected function set_badge_list() {
+        $badges     = array ();
+        $badge_info = $this->data->badges;
+        foreach ( $badge_info as $badge ) {
             $new_badge = new Badge( $badge );
             array_push( $badges, $new_badge );
         }
 
-        $this->badgeList = $badges;
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                }
+        $this->badge_list = $badges;
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                }
 
-    protected function set_points() {
-        $points_list = [];
-        foreach ( $this->user_data->points as $key => $value ) {
+    protected function set_points_list() {
+        $points_arr = [];
+
+        $points_list = $this->data->points;
+        foreach ( $points_list as $key => $value ) {
             if ( strtolower( $key ) === "total" ) {
-                $new_points        = new Points( $key, $value );
-                $this->pointsTotal = $new_points;
+                $total_points       = new Points( $key, $value );
+                $this->points_total = $total_points;
             } elseif ( $value > 0 ) {
                 $new_points = new Points( $key, $value );
-                array_push( $points_list, $new_points );
+                array_push( $points_arr, $new_points );
             }
         }
-        $this->pointsList = $points_list;
+        $this->points_list = $points_arr;
     }
 
-    protected function set_stageList() {
+    protected function set_stage_list() {
 // Create sorted badge list
 // Knock off "Newbie" badge ie first badge (Check and see whether it has no courses?)
 // Sort badges by stage name
 
-        $sorted_badges = $this->badgeList;
+        $sorted_badges = $this->badge_list;
 
 // Knock "Newbie badge off" (first badge)
         array_shift( $sorted_badges );
@@ -405,7 +462,7 @@ class ThpUser
             }
         };
 
-        $this->stageList = $stage_list;
+        $this->stage_list = $stage_list;
     }
 
 }
