@@ -13,9 +13,9 @@ class Points
     function __construct( $name, $points ) {
         $this->name   = ucfirst( $name );
         $this->points = $points;
-        if ( strtolower( $name ) !== "total" ) {
-            $this->set_color( $name );
-        }
+//        if ( strtolower( $name ) !== "total" ) {
+//            $this->set_color( $name );
+//        }
 }
 
     // Getters
@@ -32,14 +32,15 @@ class Points
         return isset( $this->color ) ? $this->color : '#0000ff';
     }
 
-    public function set_color( $name ) {
-        if ( !get_option( 'thp_chart_colors' ) ) {
-            $this->color = '#0000ff';
-            return;
-        }
-        // Assign color to points according to thp_chart_colors
-        $chart_colors = get_option( 'thp_chart_colors' );
-        $this->color  = array_key_exists( $name, $chart_colors ) ? $chart_colors[ $name ] : '#0000ff';
+    public function set_color( $color ) {
+//        if ( !get_option( 'thp_chart_colors' ) ) {
+//            $this->color = '#0000ff';
+//            return;
+//        }
+//        // Assign color to points according to thp_chart_colors
+//        $chart_colors = get_option( 'thp_chart_colors' );
+//        $this->color  = array_key_exists( $name, $chart_colors ) ? $chart_colors[ $name ] : '#0000ff';
+        $this->color = $color;
     }
 
     // Render

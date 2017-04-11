@@ -40,6 +40,20 @@ class ThpSettings
                 return get_option( 'thp_chart_colors' );
             }
         }
+        // Success
+        // Also update user object with new points list
+        if ( get_option( 'thp_user' ) ) {
+            $thp_user         = get_option( 'thp_user' );
+            $this->thp_user   = new ThpUser( $thp_user, true );
+            $user_points_list = $this->thp_user->get_points_list();
+            // Loop through existing user points list and set the colours
+            foreach ($user_points_list as $points) {
+                $name = $points->get_name();
+                $color = isset($thp_chart_colors[$name]) ? $thp_chart_colors[$name] : '#0000ff';
+                $points->set_color($color);
+            }
+            $this->thp_user->save_data();
+        }
         return $thp_chart_colors;
         add_settings_error( 'thp_chart_colors', 'thp_chart_colors', $message, $type );
     }
@@ -215,7 +229,7 @@ class ThpSettings
                     $message = __( $this->thp_user->get_error(), 'treehouse-plus' );
                     $type    = 'error';
                 }
-                
+
                 add_settings_error( 'thp_badge_save_files', 'thp_badge_save_files', $message, $type );
             }
         }
