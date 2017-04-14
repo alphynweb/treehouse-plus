@@ -48,15 +48,7 @@ class ThpUser
     }
 
     public function save_badges() {
-        // Downloads badges, resizes them and saves them to the wp-uploads directory
-        // path (filesystem path)
-        // url (http url)
-        // subdir
-        // basedir
-        // baseurl
-        // error
-
-        $count = 0; // Todo - testing with 10 badges - change to all badges once working
+        //$count = 0; // Todo - testing with 10 badges - change to all badges once working
         foreach ( $this->badge_list as $badge ) {
             $badge->resize();
             $badge->save();
