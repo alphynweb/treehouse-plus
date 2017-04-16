@@ -144,6 +144,11 @@ class ThpSettings
         
 }
 
+    public function thp_badges_save_section_callback() {
+        echo "Badges callback";
+        $t = 0;
+    }
+
     public function thp_points_settings_section_callback() {
         
     }
@@ -228,6 +233,55 @@ class ThpSettings
         }
     }
 
+    public function thp_display_badge_save_sizes_field() {
+        // Number field of pixel size to save badges as
+        ?>
+
+        <input type="number" name="thp_badge_save_sizes" value="<?php echo get_option( 'thp_badge_save_sizes' ) ? get_option( 'thp_badge_save_sizes' ) : 50; ?>" min="0" />
+
+        <?php
+    }
+
+    public function thp_badge_save_sizes_callback() {
+        if ( !isset( $_POST[ 'thp_badge_save_sizes' ] ) ) {
+            return;
+        }
+
+        // Check that correct submit button was pressed
+        if ( isset( $_POST[ 'thp_badges_save_submit' ] ) ) {
+
+            if ( !is_numeric( $_POST[ 'thp_badge_save_sizes' ] ) ) {
+                // Error with creating user info
+                $message = __( 'Badge size must be a number', 'treehouse-plus' );
+                $type    = 'error';
+                add_settings_error( 'thp_badge_save_sizes', 'thp_badge_save_sizes', $message, $type );
+                return get_option( 'thp_badge_save_sizes' ) ? get_option( 'thp_badge_save_sizes' ) : 50;
+            }
+
+            // Resize and save badges      
+            if ( get_option( 'thp_user' ) ) {
+                $thp_user       = get_option( 'thp_user' );
+                $this->thp_user = new ThpUser( $thp_user, true );
+                $this->thp_user->save_badges();
+
+                $message = 'Badges saved successfully';
+                $type    = 'updated';
+
+                if ( !empty( $this->thp_user->get_error() ) ) {
+                    // Error with creating user info
+                    $message = __( $this->thp_user->get_error(), 'treehouse-plus' );
+                    $type    = 'error';
+                }
+
+                add_settings_error( 'thp_badge_save_files', 'thp_badge_save_files', $message, $type );
+            }
+
+            return $_POST[ 'thp_badge_save_sizes' ];
+        }
+
+
+    }
+
     public function thp_display_points_display_field() {
         $option = get_option( 'thp_points_display' );
         ?>
@@ -265,20 +319,10 @@ class ThpSettings
                     }
                     break;
                 case "badges";
-                    settings_fields( 'thp_badges_settings_page' );
-                    do_settings_sections( 'thp_badges_settings_page' );
-                    submit_button( 'Save Badges Settings' );
-                    if ( get_option( 'thp_badge_sort' ) ) {
-                        $this->thp_user->sort_badges( get_option( 'thp_badge_sort' ) );
-                    }
-                    if ( get_option( 'thp_badge_show_stages' ) ) {
-                        $this->thp_user->render_stages();
-                    } else {
-                        $this->thp_user->render_badges();
-                    }
+                    $this->thp_display_badge_settings_page();
                     break;
                 case "points";
-                    $this->display_points_settings_page();
+                    $this->thp_display_points_settings_page();
                     break;
                 default:
                     settings_fields( 'thp_user_settings_page' );
@@ -292,7 +336,30 @@ class ThpSettings
         }
    }
 
-    public function display_points_settings_page() {
+    public function thp_display_badge_settings_page() {
+        settings_fields( 'thp_badges_settings_page' );
+        echo '<section>';
+        do_settings_fields( 'thp_badges_settings_page', 'thp_badges_settings_section' );
+        submit_button( 'Save Badges Settings' );
+        echo '</section>';
+
+        echo '<section>';
+        do_settings_fields( 'thp_badges_settings_page', 'thp_badges_save_section' );
+        submit_button( 'Save Badges To Filesystem', 'secondary', 'thp_badges_save_submit' );
+        echo '<p id="badgeSaveMessage">Please be patient. This could take a few seconds.</p>';
+        echo '</section>';
+
+        if ( get_option( 'thp_badge_sort' ) ) {
+            $this->thp_user->sort_badges( get_option( 'thp_badge_sort' ) );
+        }
+        if ( get_option( 'thp_badge_show_stages' ) ) {
+            $this->thp_user->render_stages();
+        } else {
+            $this->thp_user->render_badges();
+        }
+    }
+
+    public function thp_display_points_settings_page() {
         settings_fields( 'thp_points_settings_page' );
         echo '<section class="thp-section thp-points-settings-container">';
         submit_button( 'Save Settings' );

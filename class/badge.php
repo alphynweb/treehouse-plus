@@ -39,9 +39,11 @@ class Badge
     }
 
     public function resize() {
-        $new_width  = 50;
-        $new_height = 50;
-        $max_size   = 50;
+        //$badge_size = get_option( 'thp_badge_save_sizes' ) ? get_option( 'thp_badge_save_sizes' ) : 50;
+        $badge_size = isset($_POST['thp_badge_save_sizes']) ? $_POST['thp_badge_save_sizes'] : 50;
+        $new_width  = $badge_size;
+        $new_height = $badge_size;
+        $max_size   = $badge_size;
         // Create image from $tmp
 
         $temp_image = imagecreatetruecolor( $new_width, $new_height );
@@ -70,18 +72,8 @@ class Badge
         if ( !file_exists( $user_badges_dir ) ) {
             wp_mkdir_p( $user_badges_dir );
         }
-        $get  = wp_remote_get( $this->icon_url );
-        $type = wp_remote_retrieve_header( $get, 'content-type' );
-
-        // Todo - check $type
-        // Save file
-        // Require these files if media_handle_upload doesn't exist)
-//        if ( !function_exists( 'media_handle_sideload' ) ) {
-//            require_once(ABSPATH . "wp-admin" . '/includes/image.php');
-//            require_once(ABSPATH . "wp-admin" . '/includes/file.php');
-//            require_once(ABSPATH . "wp-admin" . '/includes/media.php');
-//        }
-        //        // Get filename
+        $get            = wp_remote_get( $this->icon_url );
+        $type           = wp_remote_retrieve_header( $get, 'content-type' );
         $filename       = basename( $this->icon_url );
         $dest           = $user_badges_dir . $filename;
         $resized_image  = $this->resize( $dest );
@@ -93,7 +85,7 @@ class Badge
 
     public function get_earned_date() {
         return $this->earned_date;
-                                                                                                                                }
+                                                                                                                                        }
 
     public function get_icon_url() {
         return $this->icon_url;
