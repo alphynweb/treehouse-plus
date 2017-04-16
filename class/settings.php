@@ -346,6 +346,7 @@ class ThpSettings
         echo '<section>';
         do_settings_fields( 'thp_badges_settings_page', 'thp_badges_save_section' );
         submit_button( 'Save Badges To Filesystem', 'secondary', 'thp_badges_save_submit' );
+        echo '<p id="badgeSaveMessage">Please be patient. This could take a few seconds.</p>';
         echo '</section>';
 
         if ( get_option( 'thp_badge_sort' ) ) {
