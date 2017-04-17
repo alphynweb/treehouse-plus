@@ -48,14 +48,14 @@ class ThpUser
     }
 
     public function save_badges() {
-        //$count = 0; // Todo - testing with 10 badges - change to all badges once working
+        $count = 0; // Todo - testing with 10 badges - change to all badges once working
         foreach ( $this->badge_list as $badge ) {
             $badge->resize();
             $badge->save();
-//            $count++;
-//            if ( $count === 10 ) {
-//                break;
-//            }
+            $count++;
+            if ( $count === 10 ) {
+                break;
+            }
         }
 
         $this->save_data();
