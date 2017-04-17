@@ -145,7 +145,6 @@ class ThpSettings
 }
 
     public function thp_badges_save_section_callback() {
-        echo "Badges callback";
         $t = 0;
     }
 
@@ -196,14 +195,13 @@ class ThpSettings
     public function thp_display_badge_show_stages_field() {
         $checked = get_option( 'thp_badge_show_stages' ) ? "checked" : null;
         ?>
-
         <input type="checkbox" name="thp_badge_show_stages" <?php echo $checked; ?> />
 
         <?php
     }
 
     public function thp_display_badge_save_files_field() {
-        // Checkbox to save the badges as resized files to the local filesystem
+        // Checkbox to save the badges as resized files to the local filesystem 
         ?>
 
         <input type="checkbox" name="thp_badge_save_files" />
@@ -338,16 +336,19 @@ class ThpSettings
 
     public function thp_display_badge_settings_page() {
         settings_fields( 'thp_badges_settings_page' );
-        echo '<section>';
-        do_settings_fields( 'thp_badges_settings_page', 'thp_badges_settings_section' );
-        submit_button( 'Save Badges Settings' );
-        echo '</section>';
+        //echo '<section class="thp-form-section">';
+//        do_settings_fields( 'thp_badges_settings_page', 'thp_badges_settings_section' );
+//        submit_button( 'Save Badges Settings' );
+        //echo '</section>';
+//        echo '<section class="thp-form-section">';
+//        do_settings_fields( 'thp_badges_settings_page', 'thp_badges_save_section' );
+//        submit_button( 'Save Badges To Filesystem', 'secondary', 'thp_badges_save_submit' );
+//        echo '<p id="badgeSaveMessage">Please be patient. This could take a few seconds.</p>';
+//        echo '</section>';
 
-        echo '<section>';
-        do_settings_fields( 'thp_badges_settings_page', 'thp_badges_save_section' );
+        do_settings_sections( 'thp_badges_settings_page' );
+        submit_button( 'Save Badges Settings' );
         submit_button( 'Save Badges To Filesystem', 'secondary', 'thp_badges_save_submit' );
-        echo '<p id="badgeSaveMessage">Please be patient. This could take a few seconds.</p>';
-        echo '</section>';
 
         if ( get_option( 'thp_badge_sort' ) ) {
             $this->thp_user->sort_badges( get_option( 'thp_badge_sort' ) );

@@ -127,3 +127,8 @@ label {
     color: red;
     display: none;
 }
+
+.thp-form-section {
+    padding-top: 1rem;
+    border-bottom: 1px solid #ccc;
+}
