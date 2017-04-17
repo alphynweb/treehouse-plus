@@ -145,7 +145,7 @@ class ThpUser
     }
 
     public function render_name() {
-        echo "<h2>" . $this->name . "</h2>";
+        echo '<h2 class="thp-name-title">' . $this->name . '</h2>';
     }
 
     public function render_gravatar() {

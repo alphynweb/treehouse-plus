@@ -98,7 +98,7 @@ Class Thp_Widget extends WP_Widget
             return;
         }
 
-        $thp_user = new ThpUser( get_option( 'thp_user' )[ 'user_data' ] );
+        $thp_user = new ThpUser( get_option( 'thp_user' ), true );
 
         echo $args[ 'before_widget' ];
         if ( !empty( $instance[ 'thp-widget-title' ] ) ) {
@@ -111,11 +111,9 @@ Class Thp_Widget extends WP_Widget
             $thp_user->render_gravatar();
         }
         if ( !empty( $instance[ 'thp-widget-show-points' ] ) ) {
-            echo "<h2>Points</h2>";
             $thp_user->render_points( 'list' );
         }
         if ( !empty( $instance[ 'thp-widget-show-badges' ] ) ) {
-            echo "<h2>Recent Badges</h2>";
             $badges_num = !empty( $instance[ 'thp-widget-badges-num' ] ) ? $instance[ 'thp-widget-badges-num' ] : null;
             $thp_user->sort_badges( 'earned date' );
             $thp_user->render_badges( $badges_num );
