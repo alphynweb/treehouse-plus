@@ -23,16 +23,16 @@ class ThpUser
 
         if ( $use_db ) {
             // If user is already in db
-            $this->name          = $this->data['name'];
-            $this->profile_name  = $this->data['profile_name'];
-            $this->profile_url   = $this->data['profile_url'];
-            $this->gravatar_url  = $this->data['gravatar_url'];
-            $this->gravatar_hash = $this->data['gravatar_hash'];
-            $this->badge_list    = maybe_unserialize( $this->data['badge_list'] );
-            $this->stage_list    = maybe_unserialize( $this->data['stage_list'] );
-            $this->points_list   = maybe_unserialize( $this->data['points_list'] );
-            $this->points_total  = maybe_unserialize( $this->data['points_total'] );
-            $t = 0;
+            $this->name          = $this->data[ 'name' ];
+            $this->profile_name  = $this->data[ 'profile_name' ];
+            $this->profile_url   = $this->data[ 'profile_url' ];
+            $this->gravatar_url  = $this->data[ 'gravatar_url' ];
+            $this->gravatar_hash = $this->data[ 'gravatar_hash' ];
+            $this->badge_list    = maybe_unserialize( $this->data[ 'badge_list' ] );
+            $this->stage_list    = maybe_unserialize( $this->data[ 'stage_list' ] );
+            $this->points_list   = maybe_unserialize( $this->data[ 'points_list' ] );
+            $this->points_total  = maybe_unserialize( $this->data[ 'points_total' ] );
+            $t                   = 0;
         } else {
             // If new user (getting info from Treehouse json feed)
             $this->name          = $this->data->name;
@@ -45,16 +45,21 @@ class ThpUser
             $this->set_points_list(); // Will also set points total
         }
     }
-    
+
     public function save_badges() {
-        //$count = 0; // Todo - testing with 10 badges - change to all badges once working
+        //$badge_size = get_option( 'thp_badge_save_sizes' ) ? get_option( 'thp_badge_save_sizes' ) : null;
+        //$badge_size = isset( $_POST[ 'thp_badge_save_sizes' ] ) ? $_POST[ 'thp_badge_save_sizes' ] : null;
+        if ( !isset( $_POST[ 'thp_badge_save_sizes' ] ) ) {
+            return;
+        }
+        $count = 0; // Todo - testing with 10 badges - change to all badges once working
         foreach ( $this->badge_list as $badge ) {
             $badge->resize();
             $badge->save();
-//            $count++;
-//            if ( $count === 10 ) {
-//                break;
-//            }
+            $count++;
+            if ( $count === 1 ) {
+                break;
+            }
         }
 
         $this->save_data();
@@ -128,16 +133,16 @@ class ThpUser
 
     public function save_data() {
         //$options[ 'user_data' ]  = $this->user_data; // Treehouse JSON data
-        $options[ 'name' ]         = $this->name;
-        $options[ 'profile_name' ] = $this->profile_name;
-        $options[ 'profile_url' ]    = $this->profile_url;
-        $options[ 'gravatar_url' ]   = $this->gravatar_url;
-        $options[ 'gravatar_hash' ]  = $this->gravatar_hash;
-        $options[ 'stage_list' ]   = maybe_serialize( $this->stage_list );
-        $options[ 'points_total' ] = maybe_serialize( $this->points_total );
-        $options[ 'points_list' ]  = maybe_serialize( $this->points_list );
-        $options[ 'badge_list' ]   = maybe_serialize( $this->badge_list );
-        $options[ 'updated' ]      = time();
+        $options[ 'name' ]          = $this->name;
+        $options[ 'profile_name' ]  = $this->profile_name;
+        $options[ 'profile_url' ]   = $this->profile_url;
+        $options[ 'gravatar_url' ]  = $this->gravatar_url;
+        $options[ 'gravatar_hash' ] = $this->gravatar_hash;
+        $options[ 'stage_list' ]    = maybe_serialize( $this->stage_list );
+        $options[ 'points_total' ]  = maybe_serialize( $this->points_total );
+        $options[ 'points_list' ]   = maybe_serialize( $this->points_list );
+        $options[ 'badge_list' ]    = maybe_serialize( $this->badge_list );
+        $options[ 'updated' ]       = time();
         //$options[ 'json_feed' ]    = $this->data;
 
         update_option( 'thp_user', $options );
@@ -157,14 +162,14 @@ class ThpUser
 
     public function render_badges( $num = null ) {
         $badge_list = $this->badge_list;
-        $count = 0;
+        $count      = 0;
 
         echo "<ul>";
         foreach ( $badge_list as $badge ) {
             $badge->render();
             $count++;
-            if ($num) {
-                if ($count === (int)$num) {
+            if ( $num ) {
+                if ( $count === ( int ) $num ) {
                     break;
                 }
             }
@@ -362,7 +367,7 @@ class ThpUser
 
     public function get_profile_name() {
         return $this->profile_name;
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                }
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                }
 
     public function get_name() {
         return $this->name;
@@ -379,12 +384,12 @@ class ThpUser
     public function get_points_list() {
         return $this->points_list;
     }
-    
+
     public function get_saved_badges() {
         $saved_badges_no = 0;
-        foreach($this->badge_list as $badge) {
+        foreach ( $this->badge_list as $badge ) {
             $badge_pathway = $badge->get_pathway();
-            if ( file_exists( $badge_pathway)) {
+            if ( file_exists( $badge_pathway ) ) {
                 $saved_badges_no++;
             }
         }
@@ -402,7 +407,7 @@ class ThpUser
         }
 
         $this->badge_list = $badges;
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                }
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                }
 
     protected function set_points_list() {
         $points_arr = [];

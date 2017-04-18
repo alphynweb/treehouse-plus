@@ -25,7 +25,7 @@ class Badge
         $this->set_stage_title( $this->courses );
         $this->set_filename();
         $this->set_pathway();
-        if ( file_exists( $this->pathway)) {
+        if ( file_exists( $this->pathway ) ) {
             $this->is_saved = true;
         }
 }
@@ -43,8 +43,7 @@ class Badge
     }
 
     public function resize() {
-        //$badge_size = get_option( 'thp_badge_save_sizes' ) ? get_option( 'thp_badge_save_sizes' ) : 50;
-        $badge_size = isset($_POST['thp_badge_save_sizes']) ? $_POST['thp_badge_save_sizes'] : 50;
+        $badge_size = $_POST[ 'thp_badge_save_sizes' ];
         $new_width  = $badge_size;
         $new_height = $badge_size;
         $max_size   = $badge_size;
@@ -76,9 +75,11 @@ class Badge
         if ( !file_exists( $user_badges_dir ) ) {
             wp_mkdir_p( $user_badges_dir );
         }
-        $get            = wp_remote_get( $this->icon_url );
-        $type           = wp_remote_retrieve_header( $get, 'content-type' );
-        $filename       = basename( $this->icon_url );
+        $get        = wp_remote_get( $this->icon_url );
+        $type       = wp_remote_retrieve_header( $get, 'content-type' );
+        $badge_size = $_POST[ 'thp_badge_save_sizes' ];
+        $path_info  = pathinfo( $this->icon_url );
+        $filename   = $path_info['filename'] . '-' . $badge_size . 'px.' . $path_info['extension'];
         $dest           = $user_badges_dir . $filename;
         $resized_image  = $this->resize( $dest );
         imagepng( $resized_image, $dest );
@@ -89,7 +90,7 @@ class Badge
 
     public function get_earned_date() {
         return $this->earned_date;
-                                                                                                                                        }
+                                                                                                                                                        }
 
     public function get_icon_url() {
         return $this->icon_url;
@@ -102,7 +103,7 @@ class Badge
     public function get_stage_title() {
         return $this->stage_title;
     }
-    
+
     public function get_pathway() {
         return $this->pathway;
     }
