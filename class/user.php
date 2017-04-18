@@ -158,10 +158,17 @@ class ThpUser
 
     public function render_badges( $num = null ) {
         $badge_list = $this->badge_list;
+        $count = 0;
 
         echo "<ul>";
         foreach ( $badge_list as $badge ) {
             $badge->render();
+            $count++;
+            if ($num) {
+                if ($count === (int)$num) {
+                    break;
+                }
+            }
         }
         echo "</ul>";
     }
