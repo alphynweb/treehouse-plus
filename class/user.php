@@ -44,9 +44,8 @@ class ThpUser
             $this->set_stage_list();
             $this->set_points_list(); // Will also set points total
         }
-
     }
-
+    
     public function save_badges() {
         //$count = 0; // Todo - testing with 10 badges - change to all badges once working
         foreach ( $this->badge_list as $badge ) {
@@ -379,6 +378,17 @@ class ThpUser
 
     public function get_points_list() {
         return $this->points_list;
+    }
+    
+    public function get_saved_badges() {
+        $saved_badges_no = 0;
+        foreach($this->badge_list as $badge) {
+            $badge_pathway = $badge->get_pathway();
+            if ( file_exists( $badge_pathway)) {
+                $saved_badges_no++;
+            }
+        }
+        return $saved_badges_no;
     }
 
 // Setters

@@ -14,6 +14,7 @@ class Badge
     protected $earned_date;
     protected $filename;
     protected $pathway;
+    protected $is_saved = false;
 
     function __construct( $badgeInfo ) {
         $this->courses     = isset( $badgeInfo->courses ) ? $badgeInfo->courses : null;
@@ -24,6 +25,9 @@ class Badge
         $this->set_stage_title( $this->courses );
         $this->set_filename();
         $this->set_pathway();
+        if ( file_exists( $this->pathway)) {
+            $this->is_saved = true;
+        }
 }
 
     // Render
@@ -97,6 +101,10 @@ class Badge
 
     public function get_stage_title() {
         return $this->stage_title;
+    }
+    
+    public function get_pathway() {
+        return $this->pathway;
     }
 
     protected function set_filename() {
