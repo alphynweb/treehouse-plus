@@ -55,6 +55,27 @@ register_setting(
         'thp_badges_settings_page', 'thp_badge_show_stages'
 );
 
+// Badge saving section
+add_settings_section(
+        'thp_badges_save_section', 'Badge Save', array ( $this, 'thp_badges_save_section_callback' ), 'thp_badges_settings_page'
+);
+
+//add_settings_field(
+//        'thp_badge_save_files', 'Save badges as files', array ( $this, 'thp_display_badge_save_files_field' ), 'thp_badges_settings_page', 'thp_badges_save_section'
+//);
+//
+//register_setting(
+//        'thp_badges_settings_page', 'thp_badge_save_files', array ( $this, 'thp_badge_save_files_callback' )
+//);
+
+add_settings_field(
+        'thp_badge_save_sizes', 'Size to save badges as (pixels)', array ( $this, 'thp_display_badge_save_sizes_field' ), 'thp_badges_settings_page', 'thp_badges_save_section'
+);
+
+register_setting(
+        'thp_badges_settings_page', 'thp_badge_save_sizes', array ( $this, 'thp_badge_save_sizes_callback' )
+);
+
 // Points settings section
 add_settings_section(
         'thp_points_settings_section', 'Points Settings', array ( $this, 'thp_points_settings_section_callback' ), 'thp_points_settings_page'
@@ -78,6 +99,6 @@ add_settings_field(
 );
 
 register_setting(
-        'thp_points_settings_page', 'thp_chart_colors',  array ( $this, 'thp_chart_colors_field_callback' )
+        'thp_points_settings_page', 'thp_chart_colors', array ( $this, 'thp_chart_colors_field_callback' )
 );
 

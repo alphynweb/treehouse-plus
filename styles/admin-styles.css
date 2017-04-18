@@ -122,3 +122,13 @@ label {
     font-weight: bold;
     margin-bottom: 0.5rem;
 }
+
+#badgeSaveMessage {
+    color: red;
+    display: none;
+}
+
+.thp-form-section {
+    padding-top: 1rem;
+    border-bottom: 1px solid #ccc;
+}
