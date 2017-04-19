@@ -32,7 +32,6 @@ class ThpUser
             $this->stage_list    = maybe_unserialize( $this->data[ 'stage_list' ] );
             $this->points_list   = maybe_unserialize( $this->data[ 'points_list' ] );
             $this->points_total  = maybe_unserialize( $this->data[ 'points_total' ] );
-            $t                   = 0;
         } else {
             // If new user (getting info from Treehouse json feed)
             $this->name          = $this->data->name;
@@ -52,14 +51,34 @@ class ThpUser
         if ( !isset( $_POST[ 'thp_badge_save_sizes' ] ) ) {
             return;
         }
+        $badge_size      = $_POST[ 'thp_badge_save_sizes' ] . 'px';
+        // Delete badges from filesystem that aren't the right size
+        $upload_dir      = wp_upload_dir();
+        $user_badges_dir = trailingslashit( $upload_dir[ 'basedir' ] . '/' . 'treehouse-plus-badges' );
+        $files           = glob( $user_badges_dir . '*' );
+        foreach ( $files as $file ) {
+            if ( is_file( $file ) ) {
+                // Establish pixel number on file
+                $pathinfo = pathinfo( $file );
+                $filename = $pathinfo[ 'filename' ];
+                $ex       = explode( "-", $filename );
+                $size     = end( $ex );
+                if ( $size != $badge_size ) {
+                    // Delete file
+                    unlink( $file );
+                }
+            }
+        }
         $count = 0; // Todo - testing with 10 badges - change to all badges once working
         foreach ( $this->badge_list as $badge ) {
-            $badge->resize();
-            $badge->save();
-            $count++;
-            if ( $count === 1 ) {
-                break;
+            if ( !file_exists( $badge->get_pathway() ) ) {
+                $badge->resize();
+                $badge->save();
             }
+            $count++;
+//            if ( $count === 0 ) {
+//                break;
+//            }
         }
 
         $this->save_data();
@@ -367,7 +386,7 @@ class ThpUser
 
     public function get_profile_name() {
         return $this->profile_name;
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                }
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            }
 
     public function get_name() {
         return $this->name;
@@ -407,7 +426,7 @@ class ThpUser
         }
 
         $this->badge_list = $badges;
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                }
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            }
 
     protected function set_points_list() {
         $points_arr = [];

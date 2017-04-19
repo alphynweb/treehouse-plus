@@ -75,22 +75,32 @@ class Badge
         if ( !file_exists( $user_badges_dir ) ) {
             wp_mkdir_p( $user_badges_dir );
         }
-        $get        = wp_remote_get( $this->icon_url );
-        $type       = wp_remote_retrieve_header( $get, 'content-type' );
-        $badge_size = $_POST[ 'thp_badge_save_sizes' ];
-        $path_info  = pathinfo( $this->icon_url );
-        $filename   = $path_info['filename'] . '-' . $badge_size . 'px.' . $path_info['extension'];
-        $dest           = $user_badges_dir . $filename;
-        $resized_image  = $this->resize( $dest );
-        imagepng( $resized_image, $dest );
+        $get            = wp_remote_get( $this->icon_url );
+        $type           = wp_remote_retrieve_header( $get, 'content-type' );
+        $badge_size     = $_POST[ 'thp_badge_save_sizes' ];
+        $path_info      = pathinfo( $this->icon_url );
+        $filename       = $path_info[ 'filename' ] . '-' . $badge_size . 'px.' . $path_info[ 'extension' ];
         $this->filename = esc_url( $upload_dir[ 'baseurl' ] . '/' . 'treehouse-plus-badges/' . $filename );
+        
+        
+        $user_badges_dir = trailingslashit( $upload_dir[ 'basedir' ] . '/' . 'treehouse-plus-badges' );
+        $this->pathway   = $user_badges_dir . $filename;
+        
+        
+        if ( is_file( $this->filename ) ) {
+            return;
+        }
+        $dest          = $user_badges_dir . $filename;
+        $resized_image = $this->resize( $dest );
+        imagepng( $resized_image, $dest );
+
     }
 
 // Getters and setters
 
     public function get_earned_date() {
         return $this->earned_date;
-                                                                                                                                                        }
+                                                                                                                                                            }
 
     public function get_icon_url() {
         return $this->icon_url;
