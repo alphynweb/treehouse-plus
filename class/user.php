@@ -76,7 +76,8 @@ class ThpUser
                 $badge->save();
             }
             $count++;
-//            if ( $count === 0 ) {
+            // Count = for testing
+//            if ( $count === 15 ) {
 //                break;
 //            }
         }
