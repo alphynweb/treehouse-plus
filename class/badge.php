@@ -14,6 +14,7 @@ class Badge
     protected $earned_date;
     protected $filename;
     protected $pathway;
+    protected $is_saved = false;
 
     function __construct( $badgeInfo ) {
         $this->courses     = isset( $badgeInfo->courses ) ? $badgeInfo->courses : null;
@@ -24,6 +25,9 @@ class Badge
         $this->set_stage_title( $this->courses );
         $this->set_filename();
         $this->set_pathway();
+        if ( file_exists( $this->pathway ) ) {
+            $this->is_saved = true;
+        }
 }
 
     // Render
@@ -39,8 +43,7 @@ class Badge
     }
 
     public function resize() {
-        //$badge_size = get_option( 'thp_badge_save_sizes' ) ? get_option( 'thp_badge_save_sizes' ) : 50;
-        $badge_size = isset($_POST['thp_badge_save_sizes']) ? $_POST['thp_badge_save_sizes'] : 50;
+        $badge_size = $_POST[ 'thp_badge_save_sizes' ];
         $new_width  = $badge_size;
         $new_height = $badge_size;
         $max_size   = $badge_size;
@@ -74,18 +77,30 @@ class Badge
         }
         $get            = wp_remote_get( $this->icon_url );
         $type           = wp_remote_retrieve_header( $get, 'content-type' );
-        $filename       = basename( $this->icon_url );
-        $dest           = $user_badges_dir . $filename;
-        $resized_image  = $this->resize( $dest );
-        imagepng( $resized_image, $dest );
+        $badge_size     = $_POST[ 'thp_badge_save_sizes' ];
+        $path_info      = pathinfo( $this->icon_url );
+        $filename       = $path_info[ 'filename' ] . '-' . $badge_size . 'px.' . $path_info[ 'extension' ];
         $this->filename = esc_url( $upload_dir[ 'baseurl' ] . '/' . 'treehouse-plus-badges/' . $filename );
+        
+        
+        $user_badges_dir = trailingslashit( $upload_dir[ 'basedir' ] . '/' . 'treehouse-plus-badges' );
+        $this->pathway   = $user_badges_dir . $filename;
+        
+        
+        if ( is_file( $this->filename ) ) {
+            return;
+        }
+        $dest          = $user_badges_dir . $filename;
+        $resized_image = $this->resize( $dest );
+        imagepng( $resized_image, $dest );
+
     }
 
 // Getters and setters
 
     public function get_earned_date() {
         return $this->earned_date;
-                                                                                                                                        }
+                                                                                                                                                            }
 
     public function get_icon_url() {
         return $this->icon_url;
@@ -97,6 +112,10 @@ class Badge
 
     public function get_stage_title() {
         return $this->stage_title;
+    }
+
+    public function get_pathway() {
+        return $this->pathway;
     }
 
     protected function set_filename() {
