@@ -31,16 +31,20 @@ $thp_settings = new ThpSettings();
 remove_shortcode( 'treehouse-plus-badges' );
 add_shortcode( 'treehouse-plus-badges', 'thp_badges_shortcode' );
 
-function thp_badges_shortcode() {
+function thp_badges_shortcode( $atts ) {
     if ( !get_option( 'thp_user' ) ) {
         return false;
     }
-    $thp_user_data = get_option( 'thp_user' )[ 'user_data' ];
-    $thp_user      = new ThpUser( $thp_user_data );
+    $a             = shortcode_atts( [
+        'num' => 20
+            ], $atts );
+    $no_of_badges  = is_numeric( $a[ 'num' ] ) ? esc_attr( $a[ 'num' ] ) : 20;
+    $thp_user_data = get_option( 'thp_user' );
+    $thp_user      = new ThpUser( $thp_user_data, true );
     if ( get_option( 'thp_badge_show_stages' ) ) {
         $thp_user->render_stages();
     } else {
-        $thp_user->render_badges();
+        $thp_user->render_badges( $no_of_badges );
     }
 }
 
@@ -51,8 +55,8 @@ function thp_points_shortcode() {
     if ( !get_option( 'thp_user' ) ) {
         return false;
     }
-    $thp_user_data = get_option( 'thp_user' )[ 'user_data' ];
-    $thp_user      = new ThpUser( $thp_user_data );
+    $thp_user_data = get_option( 'thp_user' );
+    $thp_user      = new ThpUser( $thp_user_data, true );
     $thp_user->render_points();
 }
 
@@ -63,8 +67,8 @@ function thp_profile_shortcode() {
     if ( !get_option( 'thp_user' ) ) {
         return false;
     }
-    $thp_user_data = get_option( 'thp_user' )[ 'user_data' ];
-    $thp_user      = new ThpUser( $thp_user_data );
+    $thp_user_data = get_option( 'thp_user' );
+    $thp_user      = new ThpUser( $thp_user_data, true );
     $thp_user->render_name();
     $thp_user->render_gravatar();
 }

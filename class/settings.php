@@ -336,17 +336,15 @@ class ThpSettings
 
     public function thp_display_badge_settings_page() {
         settings_fields( 'thp_badges_settings_page' );
-        //echo '<section class="thp-form-section">';
-//        do_settings_fields( 'thp_badges_settings_page', 'thp_badges_settings_section' );
-//        submit_button( 'Save Badges Settings' );
-        //echo '</section>';
-//        echo '<section class="thp-form-section">';
-//        do_settings_fields( 'thp_badges_settings_page', 'thp_badges_save_section' );
-//        submit_button( 'Save Badges To Filesystem', 'secondary', 'thp_badges_save_submit' );
-//        echo '<p id="badgeSaveMessage">Please be patient. This could take a few seconds.</p>';
-//        echo '</section>';
 
         do_settings_sections( 'thp_badges_settings_page' );
+        $total_badges_no = count( $this->thp_user->get_badge_list() );
+        $saved_badges_no = $this->thp_user->get_saved_badges();
+        if ( $total_badges_no === $saved_badges_no ) {
+            echo "<p>All of your badges are currently saved to your filesystem</p>";
+        } else {
+            echo "<p>You currently have " . $saved_badges_no . " badges saved to your filesystem out of a total of " . $total_badges_no . " badges.";
+        }
         submit_button( 'Save Badges Settings' );
         submit_button( 'Save Badges To Filesystem', 'secondary', 'thp_badges_save_submit' );
 
