@@ -39,8 +39,7 @@ function thp_badges_shortcode( $atts ) {
         'num' => 20
             ], $atts );
     $no_of_badges  = is_numeric( $a[ 'num' ] ) ? esc_attr( $a[ 'num' ] ) : 20;
-    $thp_user_data = get_option( 'thp_user' );
-    $thp_user      = new ThpUser( $thp_user_data, true );
+    $thp_user = ThpUser::get_instance();
     if ( get_option( 'thp_badge_show_stages' ) ) {
         $thp_user->render_stages();
     } else {
@@ -55,8 +54,7 @@ function thp_points_shortcode() {
     if ( !get_option( 'thp_user' ) ) {
         return false;
     }
-    $thp_user_data = get_option( 'thp_user' );
-    $thp_user      = new ThpUser( $thp_user_data, true );
+    $thp_user = ThpUser::get_instance();
     $thp_user->render_points();
 }
 
@@ -67,8 +65,7 @@ function thp_profile_shortcode() {
     if ( !get_option( 'thp_user' ) ) {
         return false;
     }
-    $thp_user_data = get_option( 'thp_user' );
-    $thp_user      = new ThpUser( $thp_user_data, true );
+    $thp_user = ThpUser::get_instance();
     $thp_user->render_name();
     $thp_user->render_gravatar();
 }

@@ -116,7 +116,7 @@ Class Thp_Widget extends WP_Widget
             return;
         }
 
-        $thp_user = new ThpUser( get_option( 'thp_user' ), true );
+        $thp_user = ThpUser::get_instance();
 
         echo $args[ 'before_widget' ];
         if ( !empty( $instance[ 'thp-widget-title' ] ) ) {

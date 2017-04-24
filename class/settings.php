@@ -43,8 +43,9 @@ class ThpSettings
         // Success
         // Also update user object with new points list
         if ( get_option( 'thp_user' ) ) {
-            $thp_user         = get_option( 'thp_user' );
-            $this->thp_user   = new ThpUser( $thp_user, true );
+//            $thp_user         = get_option( 'thp_user' );
+//            $this->thp_user   = new ThpUser( $thp_user, true );
+            $this->thp_user   = ThpUser::get_instance();
             $user_points_list = $this->thp_user->get_points_list();
             // Loop through existing user points list and set the colours
             foreach ( $user_points_list as $points ) {
@@ -88,37 +89,39 @@ class ThpSettings
         $message          = null;
         $type             = 'error';
 
-        if ( empty( $thp_profile_name ) ) {
-            // Field empty error
-            $message = __( 'Sorry, the profile name field cannot be empty', 'treehouse-plus' );
-        } else {
-            // Build user from json request
-            $url           = 'http://teamtreehouse.com/' . $thp_profile_name . '.json';
-            $response      = wp_remote_get( $url );
-            $response_code = wp_remote_retrieve_response_code( $response );
+        $this->thp_user = ThpUser::get_instance();
 
-            if ( $response_code == 200 ) {
-                // Json data for update successfully retrieved
-                $user_data      = json_decode( $response[ 'body' ] );
-                $this->thp_user = new ThpUser( $user_data );
-                if ( !empty( $this->thp_user->get_error() ) ) {
-                    // Error with creating user info
-                    $message = __( $this->thp_user->get_error(), 'treehouse-plus' );
-                } else {
-                    // No error
-                    // Save new user info to db
-                    $this->thp_user->save_data();
-                    $type    = 'updated';
-                    $message = __( 'Your profile has been updated', 'treehouse-plus' );
-                }
-            } else if ( $response_code == 404 ) {
-                // Error in retrieving json data
-                $type    = 'error';
-                $message = __( 'Error in retreiving user data', 'treehouse-plus' );
-            }
-        }
-
-        add_settings_error( 'thp_initial_profile_name', 'thp_initial_profile_name', $message, $type );
+//        if ( empty( $thp_profile_name ) ) {
+//            // Field empty error
+//            $message = __( 'Sorry, the profile name field cannot be empty', 'treehouse-plus' );
+//        } else {
+//            // Build user from json request
+//            $url           = 'http://teamtreehouse.com/' . $thp_profile_name . '.json';
+//            $response      = wp_remote_get( $url );
+//            $response_code = wp_remote_retrieve_response_code( $response );
+//
+//            if ( $response_code == 200 ) {
+//                // Json data for update successfully retrieved
+//                $user_data      = json_decode( $response[ 'body' ] );
+//                $this->thp_user = ThpUser::get_instance();
+//                if ( !empty( $this->thp_user->get_error() ) ) {
+//                    // Error with creating user info
+//                    $message = __( $this->thp_user->get_error(), 'treehouse-plus' );
+//                } else {
+//                    // No error
+//                    // Save new user info to db
+//                    $this->thp_user->save_data();
+//                    $type    = 'updated';
+//                    $message = __( 'Your profile has been updated', 'treehouse-plus' );
+//                }
+//            } else if ( $response_code == 404 ) {
+//                // Error in retrieving json data
+//                $type    = 'error';
+//                $message = __( 'Error in retreiving user data', 'treehouse-plus' );
+//            }
+//        }
+//
+//        add_settings_error( 'thp_initial_profile_name', 'thp_initial_profile_name', $message, $type );
     }
 
     public function thp_display_profile_name_field() {
@@ -145,7 +148,7 @@ class ThpSettings
 }
 
     public function thp_badges_save_section_callback() {
-        $t = 0;
+        
     }
 
     public function thp_points_settings_section_callback() {
@@ -209,28 +212,6 @@ class ThpSettings
         <?php
     }
 
-    public function thp_badge_save_files_callback() {
-        if ( isset( $_POST[ 'thp_badge_save_files' ] ) ) {
-            // Resize and save badges      
-            if ( get_option( 'thp_user' ) ) {
-                $thp_user       = get_option( 'thp_user' );
-                $this->thp_user = new ThpUser( $thp_user, true );
-                $this->thp_user->save_badges();
-
-                $message = 'Badges saved successfully';
-                $type    = 'updated';
-
-                if ( !empty( $this->thp_user->get_error() ) ) {
-                    // Error with creating user info
-                    $message = __( $this->thp_user->get_error(), 'treehouse-plus' );
-                    $type    = 'error';
-                }
-
-                add_settings_error( 'thp_badge_save_files', 'thp_badge_save_files', $message, $type );
-            }
-        }
-    }
-
     public function thp_display_badge_save_sizes_field() {
         // Number field of pixel size to save badges as
         ?>
@@ -256,28 +237,22 @@ class ThpSettings
                 return get_option( 'thp_badge_save_sizes' ) ? get_option( 'thp_badge_save_sizes' ) : 50;
             }
 
-            // Resize and save badges      
-            if ( get_option( 'thp_user' ) ) {
-                $thp_user       = get_option( 'thp_user' );
-                $this->thp_user = new ThpUser( $thp_user, true );
-                $this->thp_user->save_badges();
+            // Resize and save badges
+            $this->thp_user = ThpUser::get_instance();
+            $this->thp_user->save_badges();
+            $message        = 'Badges saved successfully';
+            $type           = 'updated';
 
-                $message = 'Badges saved successfully';
-                $type    = 'updated';
-
-                if ( !empty( $this->thp_user->get_error() ) ) {
-                    // Error with creating user info
-                    $message = __( $this->thp_user->get_error(), 'treehouse-plus' );
-                    $type    = 'error';
-                }
-
-                add_settings_error( 'thp_badge_save_files', 'thp_badge_save_files', $message, $type );
+            if ( !empty( $this->thp_user->get_error() ) ) {
+                // Error
+                $message = __( $this->thp_user->get_error(), 'treehouse-plus' );
+                $type    = 'error';
             }
 
-            return $_POST[ 'thp_badge_save_sizes' ];
+            add_settings_error( 'thp_badge_save_files', 'thp_badge_save_files', $message, $type );
         }
 
-
+        return $_POST[ 'thp_badge_save_sizes' ];
     }
 
     public function thp_display_points_display_field() {
@@ -338,12 +313,14 @@ class ThpSettings
         settings_fields( 'thp_badges_settings_page' );
 
         do_settings_sections( 'thp_badges_settings_page' );
-        $total_badges_no = count( $this->thp_user->get_badge_list() );
-        $saved_badges_no = $this->thp_user->get_saved_badges();
+        $total_badges_no   = count( $this->thp_user->get_badge_list() );
+        $saved_badges_info = $this->thp_user->get_saved_badges();
+        $saved_badges_no   = $saved_badges_info[ 'no_of_badges' ];
+        $badges_size       = $saved_badges_info[ 'size' ];
         if ( $total_badges_no === $saved_badges_no ) {
-            echo "<p>All of your badges are currently saved to your filesystem</p>";
+            echo "<p>All of your badges are currently saved to your filesystem at a size of " . $badges_size . "</p>";
         } else {
-            echo "<p>You currently have " . $saved_badges_no . " badges saved to your filesystem out of a total of " . $total_badges_no . " badges.";
+            echo "<p>You currently have " . $saved_badges_no . " badges saved to your filesystem out of a total of " . $total_badges_no . " badges at a size of " . $badges_size . "</p>";
         }
         submit_button( 'Save Badges Settings' );
         submit_button( 'Save Badges To Filesystem', 'secondary', 'thp_badges_save_submit' );
@@ -388,8 +365,9 @@ class ThpSettings
             // Check if user data is in database
             // If it is, then create new user class from it
             if ( get_option( 'thp_user' ) ) {
-                $thp_user       = get_option( 'thp_user' );
-                $this->thp_user = new ThpUser( $thp_user, true );
+//                $thp_user       = get_option( 'thp_user' );
+//                $this->thp_user = new ThpUser( $thp_user, true );
+                $this->thp_user = ThpUser::get_instance();
 
                 $this->thp_display_options();
             } else {

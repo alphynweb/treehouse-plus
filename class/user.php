@@ -6,6 +6,7 @@ if ( !defined( 'ABSPATH' ) ) {
 class ThpUser
 {
 
+    private static $instance;
     protected $name;
     protected $profile_name;
     protected $profile_url;
@@ -18,31 +19,64 @@ class ThpUser
     protected $data;
     protected $error;
 
-    function __construct( $data, $use_db = false ) {
-        $this->data = $data;
+    function __construct() {
+        // Work out whether to use database or Treehouse initial JSON feed
+        // If there is a user object stored in the database, use that, otherwise get info from JSON
+        if ( !isset( $_POST[ 'thp_profile_name' ] ) ) {
+            // Build user object from database
+            if ( get_option( 'thp_user' ) ) {
+                $this->data = get_option( 'thp_user' );
 
-        if ( $use_db ) {
-            // If user is already in db
-            $this->name          = $this->data[ 'name' ];
-            $this->profile_name  = $this->data[ 'profile_name' ];
-            $this->profile_url   = $this->data[ 'profile_url' ];
-            $this->gravatar_url  = $this->data[ 'gravatar_url' ];
-            $this->gravatar_hash = $this->data[ 'gravatar_hash' ];
-            $this->badge_list    = maybe_unserialize( $this->data[ 'badge_list' ] );
-            $this->stage_list    = maybe_unserialize( $this->data[ 'stage_list' ] );
-            $this->points_list   = maybe_unserialize( $this->data[ 'points_list' ] );
-            $this->points_total  = maybe_unserialize( $this->data[ 'points_total' ] );
+                $this->name          = $this->data[ 'name' ];
+                $this->profile_name  = $this->data[ 'profile_name' ];
+                $this->profile_url   = $this->data[ 'profile_url' ];
+                $this->gravatar_url  = $this->data[ 'gravatar_url' ];
+                $this->gravatar_hash = $this->data[ 'gravatar_hash' ];
+                $this->badge_list    = maybe_unserialize( $this->data[ 'badge_list' ] );
+                $this->stage_list    = maybe_unserialize( $this->data[ 'stage_list' ] );
+                $this->points_list   = maybe_unserialize( $this->data[ 'points_list' ] );
+                $this->points_total  = maybe_unserialize( $this->data[ 'points_total' ] );
+            }
         } else {
-            // If new user (getting info from Treehouse json feed)
-            $this->name          = $this->data->name;
-            $this->profile_name  = $this->data->profile_name;
-            $this->profile_url   = $this->data->profile_url;
-            $this->gravatar_url  = $this->data->gravatar_url;
-            $this->gravatar_hash = $this->data->gravatar_hash;
-            $this->set_badge_list();
-            $this->set_stage_list();
-            $this->set_points_list(); // Will also set points total
+            // Build user object from json request
+            // Obtain profile name
+            // Check whether profile name is set in the $_POST array
+            // If not, then exit
+            if ( !isset( $_POST[ 'thp_profile_name' ] ) ) {
+                exit();
+            }
+            // If set, then get JSON data
+            $thp_profile_name = $_POST[ 'thp_profile_name' ];
+            $url              = 'http://teamtreehouse.com/' . $thp_profile_name . '.json';
+            $response         = wp_remote_get( $url );
+            $response_code    = wp_remote_retrieve_response_code( $response );
+
+            if ( $response_code == 200 ) {
+                // Json data for update successfully retrieved
+                $this->data = json_decode( $response[ 'body' ] );
+                //$this->thp_user = new ThpUser( $user_data );
+
+                $this->name          = $this->data->name;
+                $this->profile_name  = $this->data->profile_name;
+                $this->profile_url   = $this->data->profile_url;
+                $this->gravatar_url  = $this->data->gravatar_url;
+                $this->gravatar_hash = $this->data->gravatar_hash;
+                $this->set_badge_list();
+                $this->set_stage_list();
+                $this->set_points_list(); // Will also set points total
+
+                $this->save_data();
+            } else if ( $response_code == 404 ) {
+                // Error in retrieving json data
+            }
         }
+    }
+
+    public static function get_instance() {
+        if ( !isset( self::$instance ) ) {
+            self::$instance = new self();
+        }
+        return self::$instance;
     }
 
     public function save_badges() {
@@ -77,9 +111,9 @@ class ThpUser
             }
             $count++;
             // Count = for testing
-//            if ( $count === 15 ) {
-//                break;
-//            }
+            if ( $count === 15 ) {
+                break;
+            }
         }
 
         $this->save_data();
@@ -387,7 +421,7 @@ class ThpUser
 
     public function get_profile_name() {
         return $this->profile_name;
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            }
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    }
 
     public function get_name() {
         return $this->name;
@@ -406,14 +440,23 @@ class ThpUser
     }
 
     public function get_saved_badges() {
+        $saved_badges_info = [];
         $saved_badges_no = 0;
         foreach ( $this->badge_list as $badge ) {
             $badge_pathway = $badge->get_pathway();
             if ( file_exists( $badge_pathway ) ) {
-                $saved_badges_no++;
+
+                // Establish pixel number on file
+                $pathinfo = pathinfo( $badge_pathway );
+                $filename = $pathinfo[ 'filename' ];
+                $ex       = explode( "-", $filename );
+                $size     = end( $ex );
+                $saved_badges_no ++;
             }
         }
-        return $saved_badges_no;
+        $saved_badges_info['no_of_badges'] = $saved_badges_no;
+        $saved_badges_info['size'] = $size;
+        return $saved_badges_info;
     }
 
 // Setters
@@ -427,18 +470,28 @@ class ThpUser
         }
 
         $this->badge_list = $badges;
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            }
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    }
 
     protected function set_points_list() {
-        $points_arr = [];
+        $points_arr       = [];
+        $thp_chart_colors = null;
 
         $points_list = $this->data->points;
+        if ( get_option( 'thp_chart_colors' ) ) {
+            $thp_chart_colors = get_option( 'thp_chart_colors' );
+        }
         foreach ( $points_list as $key => $value ) {
             if ( strtolower( $key ) === "total" ) {
                 $total_points       = new Points( $key, $value );
                 $this->points_total = $total_points;
             } elseif ( $value > 0 ) {
                 $new_points = new Points( $key, $value );
+                // Add colour if it's in thp_chart_colors
+                if ( $thp_chart_colors ) {
+                    if ( isset( $thp_chart_colors[ $key ] ) ) {
+                        $new_points->set_color( $thp_chart_colors[ $key ] );
+                    }
+                }
                 array_push( $points_arr, $new_points );
             }
         }
