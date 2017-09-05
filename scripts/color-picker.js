@@ -1,4 +1,5 @@
 jQuery(document).ready(function ($) {
-    $('.thp-color-picker').wpColorPicker();
+    //alert("Color picker");
+    $('.color-picker').wpColorPicker();
 });
 

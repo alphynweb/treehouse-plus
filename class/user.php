@@ -112,7 +112,7 @@ class ThpUser
             $count++;
             // Count = for testing
             if ( $count === 15 ) {
-                break;
+                //break;
             }
         }
 
