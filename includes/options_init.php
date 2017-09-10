@@ -60,13 +60,13 @@ add_settings_section(
         'thp_badges_save_section', 'Badge Save', array ( $this, 'thp_badges_save_section_callback' ), 'thp_badges_settings_page'
 );
 
-add_settings_field(
-        'thp_badge_save_sizes', 'Size to save badges as (pixels)', array ( $this, 'thp_display_badge_save_sizes_field' ), 'thp_badges_settings_page', 'thp_badges_save_section'
-);
-
-register_setting(
-        'thp_badges_settings_page', 'thp_badge_save_sizes', array ( $this, 'thp_badge_save_sizes_callback' )
-);
+//add_settings_field(
+//        'thp_badge_save_sizes', 'Size to save badges as (pixels)', array ( $this, 'thp_display_badge_save_sizes_field' ), 'thp_badges_settings_page', 'thp_badges_save_section'
+//);
+//
+//register_setting(
+//        'thp_badges_settings_page', 'thp_badge_save_sizes', array ( $this, 'thp_badge_save_sizes_callback' )
+//);
 
 // Points settings section
 add_settings_section(

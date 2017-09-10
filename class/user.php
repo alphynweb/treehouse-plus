@@ -112,7 +112,7 @@ class ThpUser
             $count++;
             // Count = for testing
             if ( $count === 15 ) {
-                //break;
+                break;
             }
         }
 
@@ -421,7 +421,7 @@ class ThpUser
 
     public function get_profile_name() {
         return $this->profile_name;
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    }
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                }
 
     public function get_name() {
         return $this->name;
@@ -441,7 +441,7 @@ class ThpUser
 
     public function get_saved_badges() {
         $saved_badges_info = [];
-        $saved_badges_no = 0;
+        $saved_badges_no   = 0;
         foreach ( $this->badge_list as $badge ) {
             $badge_pathway = $badge->get_pathway();
             if ( file_exists( $badge_pathway ) ) {
@@ -454,8 +454,12 @@ class ThpUser
                 $saved_badges_no ++;
             }
         }
-        $saved_badges_info['no_of_badges'] = $saved_badges_no;
-        $saved_badges_info['size'] = $size;
+        $saved_badges_info[ 'no_of_badges' ] = $saved_badges_no;
+        if ( isset( $size ) ) {
+            $saved_badges_info[ 'size' ] = $size;
+        } else {
+            $saved_badges_info[ 'size' ] = null;
+        }
         return $saved_badges_info;
     }
 
@@ -470,7 +474,7 @@ class ThpUser
         }
 
         $this->badge_list = $badges;
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    }
+    }
 
     protected function set_points_list() {
         $points_arr       = [];
