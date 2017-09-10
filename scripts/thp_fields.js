@@ -60,7 +60,7 @@ jQuery(document).ready(function ($) {
         console.log("Saving badges" + badgeList);
         var noSaved = 0;
         var badgeSize = $('#thp_badge_save_sizes').val();
-        badgeList.slice(0, 3).forEach(function (badge) {
+        badgeList.slice(0, 5).forEach(function (badge) {
             //badgeList.forEach(function (badge, index) {
             // Make ajax request to save the badge.
             $.ajax({
@@ -75,12 +75,10 @@ jQuery(document).ready(function ($) {
                 success: function (response) {
                     noSaved++;
                     console.log(response);
-                    //$('#badgeFileList').append("<p>" + response + "</p>"); // Testing
-                    //noSaved = index + 1; // TODO - alter because of asynchrounisity
                     $('#badgeFileList #progress #noSaved').html(noSaved + " badges saved");
-                    // If noSaved is equal to number of badges to save, then fire the update user_data function
                     // Test
                     if (noSaved === 5) {
+                        alert("Done!");
                         saveUserData();
                     }
                 },
@@ -96,20 +94,21 @@ jQuery(document).ready(function ($) {
         alert("Done! Saving user data");
         var badgeSize = $('#thp_badge_save_sizes').val();
         $.ajax({
-                type: 'POST',
-                url: ajaxurl,
-                data: {
-                    'action': 'thp_save_user_data'
-                },
-                cache: false,
-                success: function (response) {
-                    alert(response);
-                },
-                error: function (XMLHttpRequest, textStatus, errorThrown) {
-                    alert("Badge Status: " + textStatus);
-                    alert("Badge Error: " + errorThrown);
-                }
-            });
+            type: 'POST',
+            url: ajaxurl,
+            data: {
+                'action': 'thp_save_user_data',
+                'size': badgeSize
+            },
+            cache: false,
+            success: function (response) {
+                alert(response);
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                alert("Badge Status: " + textStatus);
+                alert("Badge Error: " + errorThrown);
+            }
+        });
     }
 
 

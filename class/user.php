@@ -421,7 +421,7 @@ class ThpUser
 
     public function get_profile_name() {
         return $this->profile_name;
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                }
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    }
 
     public function get_name() {
         return $this->name;
@@ -465,16 +465,20 @@ class ThpUser
 
 // Setters
 
-    protected function set_badge_list() {
-        $badges     = array ();
-        $badge_info = $this->data->badges;
-        foreach ( $badge_info as $badge ) {
-            $new_badge = new Badge( $badge );
-            array_push( $badges, $new_badge );
+    protected function set_badge_list( $badge_list = null ) {
+        if ( $badgeList === null ) {
+            $badges     = array ();
+            $badge_info = $this->data->badges;
+            foreach ( $badge_info as $badge ) {
+                $new_badge = new Badge( $badge );
+                array_push( $badges, $new_badge );
+            }
+        } else {
+            $badges = $badgeList;
         }
 
         $this->badge_list = $badges;
-    }
+        }
 
     protected function set_points_list() {
         $points_arr       = [];

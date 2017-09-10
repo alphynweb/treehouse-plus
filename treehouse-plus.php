@@ -117,12 +117,7 @@ add_action( 'wp_ajax_thp_get_badge_list', 'thp_get_badge_list' );
 
 function thp_get_badge_list() {
     // Delete badges that aren't the right size
-//    if ( !isset( $_POST[ 'thp_badge_save_sizes' ] ) ) {
-//        return;
-//    }
-//    $badge_size      = $_POST[ 'thp_badge_save_sizes' ] . 'px';
-//    $badge_size      = get_option( 'thp_badge_save_sizes' ) ? get_option( 'thp_badge_save_sizes' ) . 'px' : '50px';
-    $size = $_POST['size'] . "px";
+    $size            = $_POST[ 'size' ] . "px";
     // Delete badges from filesystem that aren't the right size
     $upload_dir      = wp_upload_dir();
     $user_badges_dir = trailingslashit( $upload_dir[ 'basedir' ] . '/' . 'treehouse-plus-badges' );
@@ -130,10 +125,10 @@ function thp_get_badge_list() {
     foreach ( $files as $file ) {
         if ( is_file( $file ) ) {
             // Establish pixel number on file
-            $pathinfo = pathinfo( $file );
-            $filename = $pathinfo[ 'filename' ];
-            $ex       = explode( "-", $filename );
-            $badge_size     = end( $ex );
+            $pathinfo   = pathinfo( $file );
+            $filename   = $pathinfo[ 'filename' ];
+            $ex         = explode( "-", $filename );
+            $badge_size = end( $ex );
             if ( $badge_size != $size ) {
                 // Delete file
                 unlink( $file );
@@ -161,13 +156,7 @@ function thp_get_badge_list() {
 add_action( 'wp_ajax_thp_delete_badges', 'thp_delete_badges' );
 
 function thp_delete_badges() {
-    //$badge_size = get_option( 'thp_badge_save_sizes' ) ? get_option( 'thp_badge_save_sizes' ) : null;
-    //$badge_size = isset( $_POST[ 'thp_badge_save_sizes' ] ) ? $_POST[ 'thp_badge_save_sizes' ] : null;
-//    if ( !isset( $_POST[ 'thp_badge_save_sizes' ] ) ) {
-//        return;
-//    }
-//    $badge_size      = $_POST[ 'thp_badge_save_sizes' ] . 'px';
-    $size = $_POST['size'];
+    $size            = $_POST[ 'size' ];
     // Delete badges from filesystem that aren't the right size
     $upload_dir      = wp_upload_dir();
     $user_badges_dir = trailingslashit( $upload_dir[ 'basedir' ] . '/' . 'treehouse-plus-badges' );
@@ -175,10 +164,10 @@ function thp_delete_badges() {
     foreach ( $files as $file ) {
         if ( is_file( $file ) ) {
             // Establish pixel number on file
-            $pathinfo = pathinfo( $file );
-            $filename = $pathinfo[ 'filename' ];
-            $ex       = explode( "-", $filename );
-            $badge_size     = end( $ex );
+            $pathinfo   = pathinfo( $file );
+            $filename   = $pathinfo[ 'filename' ];
+            $ex         = explode( "-", $filename );
+            $badge_size = end( $ex );
             if ( $badge_size != $size ) {
                 // Delete file
                 unlink( $file );
@@ -196,7 +185,7 @@ function thp_save_badge() {
     $thp_user      = ThpUser::get_instance();
     $badge_list    = $thp_user->get_badge_list();
     $icon_url      = $_POST[ 'icon_url' ];
-    $size = $_POST['size'];
+    $size          = $_POST[ 'size' ];
     $badge_to_save = null;
 
     // Locate badge in badge list
@@ -207,7 +196,7 @@ function thp_save_badge() {
     }
 
     // Save badge
-    $badge_to_save->save($size);
+    $badge_to_save->save( $size );
 
     echo "Badge saved: " . $icon_url;
     wp_die();
@@ -216,8 +205,18 @@ function thp_save_badge() {
 add_action( 'wp_ajax_thp_save_user_data', 'thp_save_user_data' );
 
 function thp_save_user_data() {
-    $thp_user = ThpUser::get_instance();
+    $size       = $_POST[ 'size' ];
+    $thp_user   = ThpUser::get_instance();
+    $badge_list = $thp_user->get_badge_list();
+    // TODO - alter filenames and pathways on badges to match new size
+    foreach ( $badge_list as $badge ) {
+        $filename = end( explode( "-", $badge->get_filename() ) );
+        $pathway  = end( explode( "-", $badge->get_pathway() ) );
+        $t        = 0;
+    }
+    $thp_user->set_badge_list( $badge_list );
     $thp_user->save_data();
+    // Rebuild badge list with updated pathways with new sizes on
     echo true;
     wp_die();
 }
