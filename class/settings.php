@@ -222,37 +222,37 @@ class ThpSettings
     }
 
     public function thp_badge_save_sizes_callback() {
-        if ( !isset( $_POST[ 'thp_badge_save_sizes' ] ) ) {
-            return;
-        }
-
-        // Check that correct submit button was pressed
-        if ( isset( $_POST[ 'thp_badges_save_submit' ] ) ) {
-
-            if ( !is_numeric( $_POST[ 'thp_badge_save_sizes' ] ) ) {
-                // Error with creating user info
-                $message = __( 'Badge size must be a number', 'treehouse-plus' );
-                $type    = 'error';
-                add_settings_error( 'thp_badge_save_sizes', 'thp_badge_save_sizes', $message, $type );
-                return get_option( 'thp_badge_save_sizes' ) ? get_option( 'thp_badge_save_sizes' ) : 50;
-            }
-
-            // Resize and save badges
-            $this->thp_user = ThpUser::get_instance();
-            $this->thp_user->save_badges();
-            $message        = 'Badges saved successfully';
-            $type           = 'updated';
-
-            if ( !empty( $this->thp_user->get_error() ) ) {
-                // Error
-                $message = __( $this->thp_user->get_error(), 'treehouse-plus' );
-                $type    = 'error';
-            }
-
-            add_settings_error( 'thp_badge_save_files', 'thp_badge_save_files', $message, $type );
-        }
-
-        return $_POST[ 'thp_badge_save_sizes' ];
+//        if ( !isset( $_POST[ 'thp_badge_save_sizes' ] ) ) {
+//            return;
+//        }
+//
+//        // Check that correct submit button was pressed
+//        if ( isset( $_POST[ 'thp_badges_save_submit' ] ) ) {
+//
+//            if ( !is_numeric( $_POST[ 'thp_badge_save_sizes' ] ) ) {
+//                // Error with creating user info
+//                $message = __( 'Badge size must be a number', 'treehouse-plus' );
+//                $type    = 'error';
+//                add_settings_error( 'thp_badge_save_sizes', 'thp_badge_save_sizes', $message, $type );
+//                return get_option( 'thp_badge_save_sizes' ) ? get_option( 'thp_badge_save_sizes' ) : 50;
+//            }
+//
+//            // Resize and save badges
+//            $this->thp_user = ThpUser::get_instance();
+//            $this->thp_user->save_badges();
+//            $message        = 'Badges saved successfully';
+//            $type           = 'updated';
+//
+//            if ( !empty( $this->thp_user->get_error() ) ) {
+//                // Error
+//                $message = __( $this->thp_user->get_error(), 'treehouse-plus' );
+//                $type    = 'error';
+//            }
+//
+//            add_settings_error( 'thp_badge_save_files', 'thp_badge_save_files', $message, $type );
+//        }
+//
+//        return $_POST[ 'thp_badge_save_sizes' ];
     }
 
     public function thp_display_points_display_field() {
@@ -319,12 +319,26 @@ class ThpSettings
         $badges_size       = $saved_badges_info[ 'size' ];
         if ( $total_badges_no === $saved_badges_no ) {
             echo "<p>All of your badges are currently saved to your filesystem at a size of " . $badges_size . "</p>";
+        } elseif ( $saved_badges_no === 0 ) {
+            echo "<p>You have no badges saved to your filesystem</p>";
         } else {
             echo "<p>You currently have " . $saved_badges_no . " badges saved to your filesystem out of a total of " . $total_badges_no . " badges at a size of " . $badges_size . "</p>";
         }
         submit_button( 'Save Badges Settings' );
         submit_button( 'Save Badges To Filesystem', 'secondary', 'thp_badges_save_submit' );
+        ?>
 
+        <input type="number" name="thp_badge_save_sizes" id="thp_badge_save_sizes" value="50" min="0" max="1000" />
+
+        <div id="badgeFileList">
+            <div id="progress">
+                <span id="noSaved"></span>
+                <div id="bar"></div>
+            </div>
+            Badge files (for testing):
+        </div>
+
+        <?php
         if ( get_option( 'thp_badge_sort' ) ) {
             $this->thp_user->sort_badges( get_option( 'thp_badge_sort' ) );
         }
