@@ -60,7 +60,7 @@ jQuery(document).ready(function ($) {
         console.log("Saving badges" + badgeList);
         var noSaved = 0;
         var badgeSize = $('#thp_badge_save_sizes').val();
-        badgeList.slice(0, 5).forEach(function (badge) {
+        badgeList.slice(0, 3).forEach(function (badge) {
             //badgeList.forEach(function (badge, index) {
             // Make ajax request to save the badge.
             $.ajax({
@@ -77,9 +77,9 @@ jQuery(document).ready(function ($) {
                     console.log(response);
                     $('#badgeFileList #progress #noSaved').html(noSaved + " badges saved");
                     // Test
-                    if (noSaved === 5) {
+                    if (noSaved === 3) {
                         alert("Done!");
-                        saveUserData();
+                        //saveUserData();
                     }
                 },
                 error: function (XMLHttpRequest, textStatus, errorThrown) {

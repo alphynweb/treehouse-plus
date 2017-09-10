@@ -42,7 +42,7 @@ class Badge
         <?php
     }
 
-    public function resize($dest, $size = 50) {
+    public function resize( $dest, $size = 50 ) {
         //$badge_size = $_POST[ 'thp_badge_save_sizes' ];
         //$badge_size = get_option( 'thp_badge_save_sizes' ) ? get_option( 'thp_badge_save_sizes' ) : 50;
         $new_width  = $size;
@@ -70,38 +70,47 @@ class Badge
         return $temp_image;
     }
 
-    public function save($size = 50) {
-        $upload_dir      = wp_upload_dir();
-        $user_badges_dir = trailingslashit( $upload_dir[ 'basedir' ] . '/' . 'treehouse-plus-badges' );
-        if ( !file_exists( $user_badges_dir ) ) {
-            wp_mkdir_p( $user_badges_dir );
-        }
-        $get            = wp_remote_get( $this->icon_url );
-        $type           = wp_remote_retrieve_header( $get, 'content-type' );
-        //$badge_size     = $_POST[ 'thp_badge_save_sizes' ];
-        //$badge_size     = get_option( 'thp_badge_save_sizes' ) ? get_option( 'thp_badge_save_sizes' ) : 50;
-        $path_info      = pathinfo( $this->icon_url );
-        $filename       = $path_info[ 'filename' ] . '-' . $size . 'px.' . $path_info[ 'extension' ];
-        $this->filename = esc_url( $upload_dir[ 'baseurl' ] . '/' . 'treehouse-plus-badges/' . $filename );
+    public function save( $size = 50 ) {
+        // Check directories exist and create if they don't
+        $upload_dir         = wp_upload_dir();
+        $user_badges_dir    = trailingslashit( $upload_dir[ 'basedir' ] . '/' . 'treehouse-plus-badges' );
+        $this->create_directory( $user_badges_dir );
+        $resized_badges_dir = $user_badges_dir . 'resized-' . $size . 'px';
+        $this->create_directory( $resized_badges_dir );
 
+        $get  = wp_remote_get( $this->icon_url );
+        $type = wp_remote_retrieve_header( $get, 'content-type' );
 
-        $user_badges_dir = trailingslashit( $upload_dir[ 'basedir' ] . '/' . 'treehouse-plus-badges' );
-        $this->pathway   = $user_badges_dir . $filename;
+        $path_info = pathinfo( $this->icon_url );
 
+        $filename       = $path_info[ 'filename' ] . '.' . $path_info['extension'];
+        $this->filename = esc_url( $upload_dir[ 'baseurl' ] . '/' . 'treehouse-plus-badges/' . 'resized-' . $size . 'px/' . $filename );
 
+        $this->pathway = $resized_badges_dir . '/' . $filename;
+
+        // If file already exists then return
         if ( is_file( $this->filename ) ) {
             return;
         }
-        $dest          = $user_badges_dir . $filename;
+        
+        // Resize and save
+        $dest          = $resized_badges_dir . '/' . $filename;
         $resized_image = $this->resize( $dest, $size );
         imagepng( $resized_image, $dest );
+    }
+
+    // Creates a folder for the resized badges e.g. resized-50
+    protected function create_directory( $dir ) {
+        if ( !file_exists( $dir ) ) {
+            wp_mkdir_p( $dir );
+        }
     }
 
 // Getters and setters
 
     public function get_earned_date() {
         return $this->earned_date;
-                                                                                                                                                                        }
+                                                                                                                                                                                }
 
     public function get_icon_url() {
         return $this->icon_url;
