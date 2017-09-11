@@ -82,10 +82,10 @@ class ThpUser
     public function save_badges() {
         //$badge_size = get_option( 'thp_badge_save_sizes' ) ? get_option( 'thp_badge_save_sizes' ) : null;
         //$badge_size = isset( $_POST[ 'thp_badge_save_sizes' ] ) ? $_POST[ 'thp_badge_save_sizes' ] : null;
-        if ( !isset( $_POST[ 'thp_badge_save_sizes' ] ) ) {
+        if ( !isset( $_POST[ 'thp_save_badge_size' ] ) ) {
             return;
         }
-        $badge_size      = $_POST[ 'thp_badge_save_sizes' ] . 'px';
+        $badge_size      = $_POST[ 'thp_save_badge_size' ] . 'px';
         // Delete badges from filesystem that aren't the right size
         $upload_dir      = wp_upload_dir();
         $user_badges_dir = trailingslashit( $upload_dir[ 'basedir' ] . '/' . 'treehouse-plus-badges' );
@@ -456,7 +456,7 @@ class ThpUser
         }
         $saved_badges_info[ 'no_of_badges' ] = $saved_badges_no;
         if ( isset( $size ) ) {
-            $saved_badges_info[ 'size' ] = $size;
+            $saved_badges_info[ 'size' ] = get_option('thp_save_badge_size') ? get_option('thp_save_badge_size') : 50;
         } else {
             $saved_badges_info[ 'size' ] = null;
         }
@@ -466,7 +466,7 @@ class ThpUser
 // Setters
 
     protected function set_badge_list( $badge_list = null ) {
-        if ( $badgeList === null ) {
+        if ( $badge_list === null ) {
             $badges     = array ();
             $badge_info = $this->data->badges;
             foreach ( $badge_info as $badge ) {

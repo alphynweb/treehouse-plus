@@ -116,12 +116,16 @@ function register_thp_widget() {
 add_action( 'wp_ajax_thp_get_badge_list', 'thp_get_badge_list' );
 
 function thp_get_badge_list() {
-    // Delete badges that aren't the right size
-    $size            = $_POST[ 'size' ] . "px";
+    // Delete badges that aren't the right size (delete folder with that size)
+    $size               = $_POST[ 'size' ] . "px";
     // Delete badges from filesystem that aren't the right size
-    $upload_dir      = wp_upload_dir();
-    $user_badges_dir = trailingslashit( $upload_dir[ 'basedir' ] . '/' . 'treehouse-plus-badges' );
-    $files           = glob( $user_badges_dir . '*' );
+    $upload_dir         = wp_upload_dir();
+    $user_badges_dir    = trailingslashit( $upload_dir[ 'basedir' ] . '/' . 'treehouse-plus-badges' );
+    $resized_badges_dir = $user_badges_dir . 'resized-' . $size . 'px';
+    $files              = glob( $resized_badges_dir . '*' );
+
+    remove_resized_badges_directories( $size );
+
     foreach ( $files as $file ) {
         if ( is_file( $file ) ) {
             // Establish pixel number on file
@@ -202,21 +206,49 @@ function thp_save_badge() {
     wp_die();
 }
 
-add_action( 'wp_ajax_thp_save_user_data', 'thp_save_user_data' );
+add_action( 'wp_ajax_thp_save_badge_size', 'thp_save_badge_size' );
 
-function thp_save_user_data() {
+function thp_save_badge_size() {
     $size       = $_POST[ 'size' ];
-    $thp_user   = ThpUser::get_instance();
-    $badge_list = $thp_user->get_badge_list();
-    // TODO - alter filenames and pathways on badges to match new size
-    foreach ( $badge_list as $badge ) {
-        $filename = end( explode( "-", $badge->get_filename() ) );
-        $pathway  = end( explode( "-", $badge->get_pathway() ) );
-        $t        = 0;
-    }
-    $thp_user->set_badge_list( $badge_list );
-    $thp_user->save_data();
-    // Rebuild badge list with updated pathways with new sizes on
-    echo true;
+    // Save badge size as option
+    update_option('thp_save_badge_size', $size);
+    echo "All done!";
     wp_die();
+}
+
+function remove_resized_badges_directories( $size ) {
+    // Scan through treehouse-plus-badges folder and remove directories of badges that are the wrong size (i.e. not $size)
+    // Delete badges from filesystem that aren't the right size
+    $upload_dir         = wp_upload_dir();
+    $user_badges_dir    = trailingslashit( $upload_dir[ 'basedir' ] . '/' . 'treehouse-plus-badges' );
+    $resized_badges_dir = 'resized-' . $size;
+
+    // Loop through subdirectories and remove unwanted ones
+    if ( is_dir( $user_badges_dir ) ) {
+        $objects = scandir( $user_badges_dir );
+        foreach ( $objects as $object ) {
+            if ( $object != "." && $object != ".." ) {
+                if ( filetype( $user_badges_dir . "/" . $object ) == "dir" && $object != $resized_badges_dir) {
+                    remove_directory( $user_badges_dir . $object );
+                }
+            }
+        }
+        reset( $objects );
+    }
+}
+
+function remove_directory( $dir ) {
+    if ( is_dir( $dir ) ) {
+        $objects = scandir( $dir );
+        foreach ( $objects as $object ) {
+            if ( $object != "." && $object != ".." ) {
+                if ( filetype( $dir . "/" . $object ) == "dir" )
+                    rrmdir( $dir . "/" . $object );
+                else
+                    unlink( $dir . "/" . $object );
+            }
+        }
+        reset( $objects );
+        rmdir( $dir );
+    }
 }

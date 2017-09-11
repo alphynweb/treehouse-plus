@@ -60,8 +60,8 @@ jQuery(document).ready(function ($) {
         console.log("Saving badges" + badgeList);
         var noSaved = 0;
         var badgeSize = $('#thp_badge_save_sizes').val();
-        badgeList.slice(0, 5).forEach(function (badge) {
-            //badgeList.forEach(function (badge, index) {
+        //badgeList.slice(0, 3).forEach(function (badge) {
+            badgeList.forEach(function (badge) {
             // Make ajax request to save the badge.
             $.ajax({
                 type: 'POST',
@@ -77,9 +77,9 @@ jQuery(document).ready(function ($) {
                     console.log(response);
                     $('#badgeFileList #progress #noSaved').html(noSaved + " badges saved");
                     // Test
-                    if (noSaved === 5) {
+                    if (noSaved === badgeList.length) {
                         alert("Done!");
-                        saveUserData();
+                        saveBadgeSize();
                     }
                 },
                 error: function (XMLHttpRequest, textStatus, errorThrown) {
@@ -90,19 +90,20 @@ jQuery(document).ready(function ($) {
         });
     }
 
-    function saveUserData() {
-        alert("Done! Saving user data");
+    function saveBadgeSize() {
+        alert("Done! Saving badge size field");
         var badgeSize = $('#thp_badge_save_sizes').val();
         $.ajax({
             type: 'POST',
             url: ajaxurl,
             data: {
-                'action': 'thp_save_user_data',
+                'action': 'thp_save_badge_size',
                 'size': badgeSize
             },
             cache: false,
             success: function (response) {
                 alert(response);
+                $('#badge-size').html(badgeSize + "px");
             },
             error: function (XMLHttpRequest, textStatus, errorThrown) {
                 alert("Badge Status: " + textStatus);
@@ -110,15 +111,6 @@ jQuery(document).ready(function ($) {
             }
         });
     }
-
-
-
-//        if (!confirm('Are you sure you want to save your badges to your filesystem? This may take a couple of minutes')) {
-//            event.preventDefault();
-//            return false;
-//        }
-//        return true;
-    //});
 });
 
 
