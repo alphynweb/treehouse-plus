@@ -316,19 +316,21 @@ class ThpSettings
         $total_badges_no   = count( $this->thp_user->get_badge_list() );
         $saved_badges_info = $this->thp_user->get_saved_badges();
         $saved_badges_no   = $saved_badges_info[ 'no_of_badges' ];
-        $badges_size       = $saved_badges_info[ 'size' ];
+        $badges_size       = $saved_badges_info[ 'size' ] . 'px';
         if ( $total_badges_no === $saved_badges_no ) {
-            echo "<p>All of your badges are currently saved to your filesystem at a size of " . $badges_size . "</p>";
+            echo "<p>All of your badges are currently saved to your filesystem at a size of <span id='badge-size>" . $badges_size . "</span></p>";
         } elseif ( $saved_badges_no === 0 ) {
             echo "<p>You have no badges saved to your filesystem</p>";
         } else {
-            echo "<p>You currently have " . $saved_badges_no . " badges saved to your filesystem out of a total of " . $total_badges_no . " badges at a size of " . $badges_size . "</p>";
+            echo "<p>You currently have " . $saved_badges_no . " badges saved to your filesystem out of a total of " . $total_badges_no . " badges at a size of <span id='badge-size'>" . $badges_size . "</span></p>";
         }
         submit_button( 'Save Badges Settings' );
         submit_button( 'Save Badges To Filesystem', 'secondary', 'thp_badges_save_submit' );
+
+        $badge_save_size = get_option( 'thp_save_badge_size' ) ? get_option( 'thp_save_badge_size' ) : 50;
         ?>
 
-        <input type="number" name="thp_badge_save_sizes" id="thp_badge_save_sizes" value="50" min="0" max="1000" />
+        <input type="number" name="thp_badge_save_sizes" id="thp_badge_save_sizes" value="<?php echo $badge_save_size; ?>" min="0" max="1000" />
 
         <div id="badgeFileList">
             <div id="progress">

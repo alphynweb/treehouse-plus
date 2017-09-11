@@ -206,22 +206,13 @@ function thp_save_badge() {
     wp_die();
 }
 
-add_action( 'wp_ajax_thp_save_user_data', 'thp_save_user_data' );
+add_action( 'wp_ajax_thp_save_badge_size', 'thp_save_badge_size' );
 
-function thp_save_user_data() {
+function thp_save_badge_size() {
     $size       = $_POST[ 'size' ];
-    $thp_user   = ThpUser::get_instance();
-    $badge_list = $thp_user->get_badge_list();
-    // TODO - alter filenames and pathways on badges to match new size
-    foreach ( $badge_list as $badge ) {
-        $filename = end( explode( "-", $badge->get_filename() ) );
-        $pathway  = end( explode( "-", $badge->get_pathway() ) );
-        $t        = 0;
-    }
-    $thp_user->set_badge_list( $badge_list );
-    $thp_user->save_data();
-    // Rebuild badge list with updated pathways with new sizes on
-    echo true;
+    // Save badge size as option
+    update_option('thp_save_badge_size', $size);
+    echo "All done!";
     wp_die();
 }
 
