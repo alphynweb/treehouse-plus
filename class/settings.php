@@ -318,7 +318,7 @@ class ThpSettings
         $saved_badges_no   = $saved_badges_info[ 'no_of_badges' ];
         $badges_size       = $saved_badges_info[ 'size' ] . 'px';
         if ( $total_badges_no === $saved_badges_no ) {
-            echo "<p>All of your badges are currently saved to your filesystem at a size of <span id='badge-size>" . $badges_size . "</span></p>";
+            echo "<p>All of your badges are currently saved to your filesystem at a size of <span id='badge-size'>" . $badges_size . "</span></p>";
         } elseif ( $saved_badges_no === 0 ) {
             echo "<p>You have no badges saved to your filesystem</p>";
         } else {

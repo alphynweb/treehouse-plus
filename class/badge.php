@@ -31,19 +31,19 @@ class Badge
     // Render
     public function render() {
         // If badges is in filesystem then show that, otherwise use the Treehouse url
-        //$url = file_exists( $this->pathway ) ? $this->filename : $this->icon_url;
         // Get current saved user badge size
         $size     = get_option( 'thp_save_badge_size' );
         // Check in that size folder whether the file is already saved
         $upload_dir = wp_upload_dir();
         $filename = $upload_dir[ 'basedir' ] . '/' . 'treehouse-plus-badges/resized-' . $size . 'px/' . $this->get_filename();
         // If it is, use the filename
-        if ( is_file( $filename ) && $size === true ) {
-            $src = $filename;
+        if ( is_file( $filename ) && $size ) {
+            $src = $upload_dir[ 'baseurl' ] . '/' . 'treehouse-plus-badges/resized-' . $size . 'px/' . $this->get_filename();
         } else {
             // If it isn't use the url
             $src = $this->get_icon_url();
         }
+        $t = 0;
         ?>
 
         <li class="thp-badge" data-tooltip="<?php echo $this->name; ?>">
