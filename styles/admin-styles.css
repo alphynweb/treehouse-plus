@@ -132,3 +132,19 @@ label {
     padding-top: 1rem;
     border-bottom: 1px solid #ccc;
 }
+
+/* Badge save progress bar */
+#badgeFileList #progress {
+    width: 95%;
+    height: 20px;
+    border: 1px solid;
+}
+
+#badgeFileList #progress #bar {
+    width: 0;
+    height: 20px;
+    background: red;
+    -webkit-transition: width 0.5s;
+    transition: width 0.5s;
+}
+

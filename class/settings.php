@@ -334,10 +334,10 @@ class ThpSettings
 
         <div id="badgeFileList">
             <div id="progress">
-                <span id="noSaved"></span>
                 <div id="bar"></div>
             </div>
             Badge files (for testing):
+            <span id="noSaved"></span>
         </div>
 
         <?php

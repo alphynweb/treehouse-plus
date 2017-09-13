@@ -32,36 +32,16 @@ jQuery(document).ready(function ($) {
         });
     });
 
-    // TODO - not needed?
-//    function deleteBadges(badgeList) {
-//        alert("Deleting badges");
-//        $.ajax({
-//            type: 'POST',
-//            url: ajaxurl,
-//            data: {
-//                'action': 'thp_delete_badges'
-//            },
-//            dataType: 'json',
-//            cache: false,
-//            success: function (response) {
-//                //alert("Ajax tester successful. Saving badges");
-//                saveBadges(response);
-//            },
-//            error: function (XMLHttpRequest, textStatus, errorThrown) {
-//                alert("Status: " + textStatus);
-//                alert("Error: " + errorThrown);
-//            }
-//        });
-//    }
-
     function saveBadges(badgeList) {
         // Loop through badges and make ajax call for each one to save.
         //alert("Saving badges");
-        console.log("Saving badges" + badgeList);
+        console.log("Saving " + badgeList.length + " badges");
         var noSaved = 0;
+        var badgePercent = 0;
         var badgeSize = $('#thp_badge_save_sizes').val();
-        //badgeList.slice(0, 3).forEach(function (badge) {
-            badgeList.forEach(function (badge) {
+        var numberToSave = badgeList.length;
+        badgeList.slice(0, numberToSave).forEach(function (badge) {
+            //badgeList.forEach(function (badge) {
             // Make ajax request to save the badge.
             $.ajax({
                 type: 'POST',
@@ -75,9 +55,15 @@ jQuery(document).ready(function ($) {
                 success: function (response) {
                     noSaved++;
                     console.log(response);
-                    $('#badgeFileList #progress #noSaved').html(noSaved + " badges saved");
+                    $('#badgeFileList #noSaved').html(noSaved + " badges saved");
+                    // Update progress bar
+                    // Work out percentage to increase by
+                    badgePercent = badgePercent + (100 / numberToSave);
+                    console.log(badgePercent);
+                    $('#badgeFileList #progress #bar').css('width', badgePercent + "%");
                     // Test
-                    if (noSaved === badgeList.length) {
+                    //if (noSaved === badgeList.length) {
+                    if (noSaved === numberToSave) {
                         alert("Done!");
                         saveBadgeSize();
                     }
