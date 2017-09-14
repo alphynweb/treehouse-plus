@@ -116,9 +116,11 @@ function register_thp_widget() {
 add_action( 'wp_ajax_thp_get_badge_list', 'thp_get_badge_list' );
 
 function thp_get_badge_list() {
-    // Delete badges that aren't the right size (delete folder with that size)
-    $size               = $_POST[ 'size' ] . "px";
-    // Delete badges from filesystem that aren't the right size
+    $size = $_POST[ 'size' ];
+    // Save badge size as option
+    update_option( 'thp_save_badge_size', $size );
+    
+    // Delete badges and folders from filesystem that aren't the right size
     $upload_dir         = wp_upload_dir();
     $user_badges_dir    = trailingslashit( $upload_dir[ 'basedir' ] . '/' . 'treehouse-plus-badges' );
     $resized_badges_dir = $user_badges_dir . 'resized-' . $size . 'px';
@@ -133,7 +135,7 @@ function thp_get_badge_list() {
             $filename   = $pathinfo[ 'filename' ];
             $ex         = explode( "-", $filename );
             $badge_size = end( $ex );
-            if ( $badge_size != $size ) {
+            if ( $badge_size != $size . "px" ) {
                 // Delete file
                 unlink( $file );
             }
@@ -144,15 +146,26 @@ function thp_get_badge_list() {
     $badge_list        = $thp_user->get_badge_list();
     $saved_badges_info = $thp_user->get_saved_badges();
     $saved_badges_no   = $saved_badges_info[ 'no_of_badges' ];
+    $no_to_save        = count( $badge_list ) - $saved_badges_no;
 
     $badge_list_info = [];
     foreach ( $badge_list as $badge ) {
-        $new_badge = [
-            'icon_url' => $badge->get_icon_url(),
-        ];
-        array_push( $badge_list_info, $new_badge );
+        // Only add badge if it isn't already saved to the filesystem
+        $badge_pathway = $badge->get_pathway();
+        if ( !is_file( $badge_pathway ) ) {
+            $new_badge = [
+                'icon_url' => $badge->get_icon_url(),
+            ];
+            array_push( $badge_list_info, $new_badge );
+        }
     }
-    echo json_encode( $badge_list_info );
+    $response = [
+        'total_badges' => count($badge_list),
+        'badges_to_save' => $badge_list_info
+    ];
+    // Send list of badges to save via AJAX
+    //echo json_encode( $badge_list_info );
+    echo json_encode($response);
     wp_die();
 }
 
@@ -209,9 +222,9 @@ function thp_save_badge() {
 add_action( 'wp_ajax_thp_save_badge_size', 'thp_save_badge_size' );
 
 function thp_save_badge_size() {
-    $size       = $_POST[ 'size' ];
+    $size = $_POST[ 'size' ];
     // Save badge size as option
-    update_option('thp_save_badge_size', $size);
+    update_option( 'thp_save_badge_size', $size );
     echo "All done!";
     wp_die();
 }
@@ -228,7 +241,7 @@ function remove_resized_badges_directories( $size ) {
         $objects = scandir( $user_badges_dir );
         foreach ( $objects as $object ) {
             if ( $object != "." && $object != ".." ) {
-                if ( filetype( $user_badges_dir . "/" . $object ) == "dir" && $object != $resized_badges_dir) {
+                if ( filetype( $user_badges_dir . "/" . $object ) == "dir" && $object != $resized_badges_dir ) {
                     remove_directory( $user_badges_dir . $object );
                 }
             }
