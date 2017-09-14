@@ -22,8 +22,10 @@ jQuery(document).ready(function ($) {
             cache: false,
             success: function (response) {
                 //alert("Ajax tester successful. Saving badges");
-                saveBadges(response);
+                //saveBadges(response);
                 //deleteBadges(response);
+                console.log(response);
+                saveBadges(response);
             },
             error: function (XMLHttpRequest, textStatus, errorThrown) {
                 alert("Status: " + textStatus);
@@ -32,14 +34,18 @@ jQuery(document).ready(function ($) {
         });
     });
 
-    function saveBadges(badgeList) {
+    function saveBadges(response) {
         // Loop through badges and make ajax call for each one to save.
         //alert("Saving badges");
+        var badgeList = response['badges_to_save'];
         console.log("Saving " + badgeList.length + " badges");
         var noSaved = 0;
         var badgePercent = 0;
         var badgeSize = $('#thp_badge_save_sizes').val();
-        var numberToSave = badgeList.length;
+        //var numberToSave = badgeList.length;
+        var numberToSave = 5;
+        var totalBadgesNo = response['total_badges'];
+        $('#thp-badges-size').html(badgeSize + "px");
         badgeList.slice(0, numberToSave).forEach(function (badge) {
             //badgeList.forEach(function (badge) {
             // Make ajax request to save the badge.
@@ -61,11 +67,12 @@ jQuery(document).ready(function ($) {
                     badgePercent = badgePercent + (100 / numberToSave);
                     console.log(badgePercent);
                     $('#badgeFileList #progress #bar').css('width', badgePercent + "%");
+                    // Update badges saved message
+                    $('#thp-saved-badges-message #thp-saved-badges-no').html(totalBadgesNo - (badgeList.length - noSaved));
                     // Test
-                    //if (noSaved === badgeList.length) {
                     if (noSaved === numberToSave) {
                         alert("Done!");
-                        saveBadgeSize();
+                        //saveBadgeSize();
                     }
                 },
                 error: function (XMLHttpRequest, textStatus, errorThrown) {
@@ -76,27 +83,28 @@ jQuery(document).ready(function ($) {
         });
     }
 
-    function saveBadgeSize() {
-        alert("Done! Saving badge size field");
-        var badgeSize = $('#thp_badge_save_sizes').val();
-        $.ajax({
-            type: 'POST',
-            url: ajaxurl,
-            data: {
-                'action': 'thp_save_badge_size',
-                'size': badgeSize
-            },
-            cache: false,
-            success: function (response) {
-                alert(response);
-                $('#badge-size').html(badgeSize + "px");
-            },
-            error: function (XMLHttpRequest, textStatus, errorThrown) {
-                alert("Badge Status: " + textStatus);
-                alert("Badge Error: " + errorThrown);
-            }
-        });
-    }
+    // TODO - No need for this
+//    function saveBadgeSize() {
+//        alert("Done! Saving badge size field");
+//        var badgeSize = $('#thp_badge_save_sizes').val();
+//        $.ajax({
+//            type: 'POST',
+//            url: ajaxurl,
+//            data: {
+//                'action': 'thp_save_badge_size',
+//                'size': badgeSize
+//            },
+//            cache: false,
+//            success: function (response) {
+//                alert(response);
+//                $('#thp-badges-size').html(badgeSize + "px");
+//            },
+//            error: function (XMLHttpRequest, textStatus, errorThrown) {
+//                alert("Badge Status: " + textStatus);
+//                alert("Badge Error: " + errorThrown);
+//            }
+//        });
+//    }
 });
 
 

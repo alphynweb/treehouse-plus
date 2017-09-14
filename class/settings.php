@@ -313,17 +313,19 @@ class ThpSettings
         settings_fields( 'thp_badges_settings_page' );
 
         do_settings_sections( 'thp_badges_settings_page' );
-        $total_badges_no   = count( $this->thp_user->get_badge_list() );
-        $saved_badges_info = $this->thp_user->get_saved_badges();
-        $saved_badges_no   = $saved_badges_info[ 'no_of_badges' ];
-        $badges_size       = $saved_badges_info[ 'size' ] . 'px';
+        $total_badges_no      = count( $this->thp_user->get_badge_list() );
+        $saved_badges_info    = $this->thp_user->get_saved_badges();
+        $saved_badges_no      = $saved_badges_info[ 'no_of_badges' ];
+        $badges_size          = $saved_badges_info[ 'size' ] . 'px';
+        $saved_badges_message = "You currently have no badges saved to your filesystem";
         if ( $total_badges_no === $saved_badges_no ) {
-            echo "<p>All of your badges are currently saved to your filesystem at a size of <span id='badge-size'>" . $badges_size . "</span></p>";
-        } elseif ( $saved_badges_no === 0 ) {
-            echo "<p>You have no badges saved to your filesystem</p>";
-        } else {
-            echo "<p>You currently have " . $saved_badges_no . " badges saved to your filesystem out of a total of " . $total_badges_no . " badges at a size of <span id='badge-size'>" . $badges_size . "</span></p>";
+            $saved_badges_message = "All {$total_badges_no} of your badges are currently saved to your filesystem at a size of <span id='thp-badges-size'>" . $badges_size . "</span>";
+        } elseif ( $saved_badges_no > 0 ) {
+            $saved_badges_message = "You currently have <span id='thp-saved-badges-no'>{$saved_badges_no}</span> out of <span id='thp-total-badges-no'>{$total_badges_no}</span> badges saved to your filesystem at a size of <span id='thp-badges-size'>{$badges_size}</span>";
         }
+        echo '<p id="thp-saved-badges-message">';
+        echo $saved_badges_message;
+        echo '</p>';
         submit_button( 'Save Badges Settings' );
         submit_button( 'Save Badges To Filesystem', 'secondary', 'thp_badges_save_submit' );
 
