@@ -7,9 +7,9 @@ jQuery(document).ready(function ($) {
         //alert($('#thp_badge_save_sizes').val());
         event.preventDefault();
         var badgeSize = $('#thp_badge_save_sizes').val();
-        if (!confirm('Are you sure you want to save your badges to your filesystem? This may take a couple of minutes')) {
-            return false;
-        }
+//        if (!confirm('Are you sure you want to save your badges to your filesystem? This may take a couple of minutes')) {
+//            return false;
+//        }
 
         $.ajax({
             type: 'POST',

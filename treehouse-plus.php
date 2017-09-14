@@ -126,7 +126,7 @@ function thp_get_badge_list() {
     $resized_badges_dir = $user_badges_dir . 'resized-' . $size . 'px';
     $files              = glob( $resized_badges_dir . '*' );
 
-    remove_resized_badges_directories( $size );
+    remove_resized_badges_directories( $size . "px" );
 
     foreach ( $files as $file ) {
         if ( is_file( $file ) ) {

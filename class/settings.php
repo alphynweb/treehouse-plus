@@ -327,20 +327,10 @@ class ThpSettings
         echo $saved_badges_message;
         echo '</p>';
         submit_button( 'Save Badges Settings' );
-        submit_button( 'Save Badges To Filesystem', 'secondary', 'thp_badges_save_submit' );
-
-        $badge_save_size = get_option( 'thp_save_badge_size' ) ? get_option( 'thp_save_badge_size' ) : 50;
+        //submit_button( 'Save Badges To Filesystem', 'secondary', 'thp_badges_save_submit' );
         ?>
 
-        <input type="number" name="thp_badge_save_sizes" id="thp_badge_save_sizes" value="<?php echo $badge_save_size; ?>" min="0" max="1000" />
-
-        <div id="badgeFileList">
-            <div id="progress">
-                <div id="bar"></div>
-            </div>
-            Badge files (for testing):
-            <span id="noSaved"></span>
-        </div>
+        <a href="#TB_inline?width=600&height=550&inlineId=thp-badge-save-modal" class="thickbox">Save badges</a>
 
         <?php
         if ( get_option( 'thp_badge_sort' ) ) {
@@ -373,7 +363,23 @@ class ThpSettings
     }
 
     public function thp_display_settings_page() {
+        add_thickbox();
         ?>
+
+        <!-- Badge save overlay -->
+
+        <div id="thp-badge-save-modal">
+            <button id="thp_badges_save_submit">Save badges</button>
+            <?php $badge_save_size = get_option( 'thp_save_badge_size' ) ? get_option( 'thp_save_badge_size' ) : 50; ?>
+            <input type="number" name="thp_badge_save_sizes" id="thp_badge_save_sizes" value="<?php echo $badge_save_size; ?>" min="0" max="1000" />
+            <div id="badgeFileList">
+                <div id="progress">
+                    <div id="bar"></div>
+                </div>
+                Badge files (for testing):
+                <span id="noSaved"></span>
+            </div>
+        </div>	
 
         <form action="options.php" method="post">
 
