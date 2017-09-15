@@ -45,7 +45,8 @@ jQuery(document).ready(function ($) {
         //var numberToSave = badgeList.length;
         var numberToSave = 5;
         var totalBadgesNo = response['total_badges'];
-        $('#thp-badges-size').html(badgeSize + "px");
+        $('.thp-badges-size').html(badgeSize + "px");
+        $('#badgeFileList #progress').show();
         badgeList.slice(0, numberToSave).forEach(function (badge) {
             //badgeList.forEach(function (badge) {
             // Make ajax request to save the badge.
@@ -68,7 +69,7 @@ jQuery(document).ready(function ($) {
                     console.log(badgePercent);
                     $('#badgeFileList #progress #bar').css('width', badgePercent + "%");
                     // Update badges saved message
-                    $('#thp-saved-badges-message #thp-saved-badges-no').html(totalBadgesNo - (badgeList.length - noSaved));
+                    $('#thp-saved-badges-message .thp-saved-badges-no').html(totalBadgesNo - (badgeList.length - noSaved));
                     // Test
                     if (noSaved === numberToSave) {
                         alert("Done!");
