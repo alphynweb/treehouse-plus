@@ -72,8 +72,11 @@ jQuery(document).ready(function ($) {
                     $('#thp-saved-badges-message .thp-saved-badges-no').html(totalBadgesNo - (badgeList.length - noSaved));
                     // Test
                     if (noSaved === numberToSave) {
-                        alert("Done!");
+                        //alert("Done!");
                         //saveBadgeSize();
+                        // Display completed message inside modal
+                        $('#thp-badge-save-section').css('display', 'none');
+                        $('#thp-badge-save-complete-section').css('display', 'block');
                     }
                 },
                 error: function (XMLHttpRequest, textStatus, errorThrown) {
