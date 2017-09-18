@@ -69,13 +69,11 @@ jQuery(document).ready(function ($) {
                     console.log(badgePercent);
                     $('#badgeFileList #progress #bar').css('width', badgePercent + "%");
                     // Update badges saved message
-                    $('#thp-saved-badges-message .thp-saved-badges-no').html(totalBadgesNo - (badgeList.length - noSaved));
+                    $('.thp-saved-badges-message').html("You currently have <span class='thp-saved-badges-no'></span> out of <span class='thp-total-badges-no'>" + totalBadgesNo + "</span> badges saved to your filesystem at a size of <span class='thp-badges-size'>" + badgeSize + "px</span>");
+                    $('.thp-saved-badges-message .thp-saved-badges-no').html(totalBadgesNo - (badgeList.length - noSaved));
                     // Test
                     if (noSaved === numberToSave) {
-                        //alert("Done!");
-                        //saveBadgeSize();
-                        // Display completed message inside modal
-                        $('#thp-badge-save-section').css('display', 'none');
+                        //$('#thp-badge-save-section').css('display', 'none');
                         $('#thp-badge-save-complete-section').css('display', 'block');
                     }
                 },

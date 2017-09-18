@@ -310,21 +310,7 @@ class ThpSettings
 
         do_settings_sections( 'thp_badges_settings_page' );
         submit_button( 'Save Badges Settings' );
-
-        $total_badges_no      = count( $this->thp_user->get_badge_list() );
-        $saved_badges_info    = $this->thp_user->get_saved_badges();
-        $saved_badges_no      = $saved_badges_info[ 'no_of_badges' ];
-        $badges_size          = $saved_badges_info[ 'size' ] . 'px';
-        $saved_badges_message = "You currently have no badges saved to your filesystem";
-        if ( $total_badges_no === $saved_badges_no ) {
-            $saved_badges_message = "All {$total_badges_no} of your badges are currently saved to your filesystem at a size of <span class='thp-badges-size'>" . $badges_size . "</span>";
-        } elseif ( $saved_badges_no > 0 ) {
-            $saved_badges_message = "You currently have <span class='thp-saved-badges-no'>{$saved_badges_no}</span> out of <span class='thp-total-badges-no'>{$total_badges_no}</span> badges saved to your filesystem at a size of <span class='thp-badges-size'>{$badges_size}</span>";
-        }
-        echo '<p id="thp-saved-badges-message">';
-        echo $saved_badges_message;
-        echo '</p>';
-        //submit_button( 'Save Badges To Filesystem', 'secondary', 'thp_badges_save_submit' );
+        $this->thp_render_badge_save_messages();
         ?>
 
         <a href="#TB_inline?width=600&height=550&inlineId=thp-badge-save-modal" class="thickbox button button-secondary">Save badges</a>
@@ -359,6 +345,23 @@ class ThpSettings
         return $sanitized_option;
     }
 
+    public function thp_render_badge_save_messages() {
+
+        $total_badges_no      = count( $this->thp_user->get_badge_list() );
+        $saved_badges_info    = $this->thp_user->get_saved_badges();
+        $saved_badges_no      = $saved_badges_info[ 'no_of_badges' ];
+        $badges_size          = $saved_badges_info[ 'size' ] . 'px';
+        $saved_badges_message = "You currently have no badges saved to your filesystem";
+        if ( $total_badges_no === $saved_badges_no ) {
+            $saved_badges_message = "All {$total_badges_no} of your badges are currently saved to your filesystem at a size of <span class='thp-badges-size'>" . $badges_size . "</span>";
+        } elseif ( $saved_badges_no > 0 ) {
+            $saved_badges_message = "You currently have <span class='thp-saved-badges-no'>{$saved_badges_no}</span> out of <span class='thp-total-badges-no'>{$total_badges_no}</span> badges saved to your filesystem at a size of <span class='thp-badges-size'>{$badges_size}</span>";
+        }
+        echo '<p class="thp-saved-badges-message">';
+        echo $saved_badges_message;
+        echo '</p>';
+    }
+
     public function thp_display_settings_page() {
         add_thickbox();
         ?>
@@ -369,25 +372,11 @@ class ThpSettings
             <div id="thp-badge-save-section">
 
                 <?php
-                $badge_save_size = get_option( 'thp_save_badge_size' ) ? get_option( 'thp_save_badge_size' ) : 50;
-
-                $total_badges_no      = count( $this->thp_user->get_badge_list() );
-                $saved_badges_info    = $this->thp_user->get_saved_badges();
-                $saved_badges_no      = $saved_badges_info[ 'no_of_badges' ];
-                $badges_size          = $saved_badges_info[ 'size' ] . 'px';
-                $saved_badges_message = "You currently have no badges saved to your filesystem";
-                if ( $total_badges_no === $saved_badges_no ) {
-                    $saved_badges_message = "All {$total_badges_no} of your badges are currently saved to your filesystem at a size of <span class='thp-badges-size'>" . $badges_size . "</span>";
-                } elseif ( $saved_badges_no > 0 ) {
-                    $saved_badges_message = "You currently have <span class='thp-saved-badges-no'>{$saved_badges_no}</span> out of <span class='thp-total-badges-no'>{$total_badges_no}</span> badges saved to your filesystem at a size of <span class='thp-badges-size'>{$badges_size}</span>";
-                }
-                echo '<p id="thp-saved-badges-message">';
-                echo $saved_badges_message;
-                echo '</p>';
+                $this->thp_render_badge_save_messages();
                 ?>
 
                 <label for="thp_badge_save_sizes">Size to save badges (px)</label>
-                <input type="number" name="thp_badge_save_sizes" id="thp_badge_save_sizes" value="<?php echo $badge_save_size; ?>" min="0" max="300" />
+                <input type="number" name="thp_badge_save_sizes" id="thp_badge_save_sizes" value="<?php echo $this->get_badge_save_size(); ?>" min="0" max="300" />
                 <button id="thp_badges_save_submit" class="button button-primary">Save my badges!</button>
                 <div id="badgeFileList">
                     <div id="progress">
@@ -410,10 +399,6 @@ class ThpSettings
             // Check if user data is in database
             // If it is, then create new user class from it
             if ( get_option( 'thp_user' ) ) {
-//                $thp_user       = get_option( 'thp_user' );
-//                $this->thp_user = new ThpUser( $thp_user, true );
-                //$this->thp_user = ThpUser::get_instance();
-
                 $this->thp_display_options();
             } else {
                 settings_fields( 'thp_initial_settings_page' );
@@ -431,6 +416,11 @@ class ThpSettings
         add_options_page(
                 'Treehouse Plus - Options', 'Treehouse Plus', 'manage_options', 'treehouse-plus', array ( $this, 'thp_display_settings_page' )
         );
+    }
+    
+    public function get_badge_save_size() {
+        $badge_save_size = get_option( 'thp_save_badge_size' ) ? get_option( 'thp_save_badge_size' ) : 50;
+        return $badge_save_size;
     }
 
 }
