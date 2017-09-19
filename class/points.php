@@ -45,11 +45,11 @@ class Points
 
     // Render
     public function render() {
-        $total = strtolower( $this->name ) === "total" ? "thp-total-points" : null;
+        $total = strtolower( $this->get_name() ) === "total" ? "thp-total-points" : null;
         ?>
 
         <li class="thp-points-item <?php echo $total; ?>">
-            <span class="thp-points-icon" style="color: <?php echo $this->color; ?>"></span>
+            <span class="thp-points-icon" style="color: <?php echo $this->get_color(); ?>"></span>
             <span class="thp-points-name"><?php echo $this->name; ?></span>
             <span class="thp-points-num">(<?php echo $this->points; ?>)</span>
         </li>
