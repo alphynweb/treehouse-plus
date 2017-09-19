@@ -160,3 +160,8 @@ label {
     display: none;
 }
 
+/* Nav tabs */
+.nav-tab:first-child {
+    margin-left: 0;
+}
+
