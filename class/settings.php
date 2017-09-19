@@ -11,6 +11,7 @@ class ThpSettings
     function __construct() {
         add_action( 'admin_init', array ( $this, 'thp_options_init' ) );
         add_action( 'admin_menu', array ( $this, 'thp_menu' ) );
+        $this->thp_user = ThpUser::get_instance();
     }
 
     public function thp_options_init() {
@@ -42,19 +43,16 @@ class ThpSettings
         }
         // Success
         // Also update user object with new points list
-        if ( get_option( 'thp_user' ) ) {
-//            $thp_user         = get_option( 'thp_user' );
-//            $this->thp_user   = new ThpUser( $thp_user, true );
-            $this->thp_user   = ThpUser::get_instance();
-            $user_points_list = $this->thp_user->get_points_list();
-            // Loop through existing user points list and set the colours
-            foreach ( $user_points_list as $points ) {
-                $name  = $points->get_name();
-                $color = isset( $thp_chart_colors[ $name ] ) ? $thp_chart_colors[ $name ] : '#0000ff';
-                $points->set_color( $color );
-            }
-            $this->thp_user->save_data();
+
+        $user_points_list = $this->thp_user->get_points_list();
+        // Loop through existing user points list and set the colours
+        foreach ( $user_points_list as $points ) {
+            $name  = $points->get_name();
+            $color = isset( $thp_chart_colors[ $name ] ) ? $thp_chart_colors[ $name ] : '#0000ff';
+            $points->set_color( $color );
         }
+        $this->thp_user->save_data();
+
         return $thp_chart_colors;
         add_settings_error( 'thp_chart_colors', 'thp_chart_colors', $message, $type );
     }
@@ -89,8 +87,7 @@ class ThpSettings
         $message          = null;
         $type             = 'error';
 
-        $this->thp_user = ThpUser::get_instance();
-
+        //$this->thp_user = ThpUser::get_instance();
 //        if ( empty( $thp_profile_name ) ) {
 //            // Field empty error
 //            $message = __( 'Sorry, the profile name field cannot be empty', 'treehouse-plus' );
@@ -125,13 +122,12 @@ class ThpSettings
     }
 
     public function thp_display_profile_name_field() {
-        $thp_profile_name = null;
-
+        //$thp_profile_name = null;
         // If there is a user stored in the db then this will be the user settings screen and this will have the value of the user profile name
-        if ( isset( $this->thp_user ) ) {
-            // Display $this->thp_user profile name
-            $thp_profile_name = $this->thp_user->get_profile_name();
-        }
+        //if ( isset( $this->thp_user ) ) {
+        // Display $this->thp_user profile name
+        $thp_profile_name = $this->thp_user->get_profile_name();
+        //}
         ?>
 
         <input type="text" name="thp_profile_name" value="<?php echo $thp_profile_name; ?>" />
@@ -313,34 +309,11 @@ class ThpSettings
         settings_fields( 'thp_badges_settings_page' );
 
         do_settings_sections( 'thp_badges_settings_page' );
-        $total_badges_no      = count( $this->thp_user->get_badge_list() );
-        $saved_badges_info    = $this->thp_user->get_saved_badges();
-        $saved_badges_no      = $saved_badges_info[ 'no_of_badges' ];
-        $badges_size          = $saved_badges_info[ 'size' ] . 'px';
-        $saved_badges_message = "You currently have no badges saved to your filesystem";
-        if ( $total_badges_no === $saved_badges_no ) {
-            $saved_badges_message = "All {$total_badges_no} of your badges are currently saved to your filesystem at a size of <span id='thp-badges-size'>" . $badges_size . "</span>";
-        } elseif ( $saved_badges_no > 0 ) {
-            $saved_badges_message = "You currently have <span id='thp-saved-badges-no'>{$saved_badges_no}</span> out of <span id='thp-total-badges-no'>{$total_badges_no}</span> badges saved to your filesystem at a size of <span id='thp-badges-size'>{$badges_size}</span>";
-        }
-        echo '<p id="thp-saved-badges-message">';
-        echo $saved_badges_message;
-        echo '</p>';
         submit_button( 'Save Badges Settings' );
-        submit_button( 'Save Badges To Filesystem', 'secondary', 'thp_badges_save_submit' );
-
-        $badge_save_size = get_option( 'thp_save_badge_size' ) ? get_option( 'thp_save_badge_size' ) : 50;
+        $this->thp_render_badge_save_messages();
         ?>
 
-        <input type="number" name="thp_badge_save_sizes" id="thp_badge_save_sizes" value="<?php echo $badge_save_size; ?>" min="0" max="1000" />
-
-        <div id="badgeFileList">
-            <div id="progress">
-                <div id="bar"></div>
-            </div>
-            Badge files (for testing):
-            <span id="noSaved"></span>
-        </div>
+        <a href="#TB_inline?width=600&height=550&inlineId=thp-badge-save-modal" class="thickbox button button-secondary">Save badges</a>
 
         <?php
         if ( get_option( 'thp_badge_sort' ) ) {
@@ -372,8 +345,51 @@ class ThpSettings
         return $sanitized_option;
     }
 
+    public function thp_render_badge_save_messages() {
+
+        $total_badges_no      = count( $this->thp_user->get_badge_list() );
+        $saved_badges_info    = $this->thp_user->get_saved_badges();
+        $saved_badges_no      = $saved_badges_info[ 'no_of_badges' ];
+        $badges_size          = $saved_badges_info[ 'size' ] . 'px';
+        $saved_badges_message = "You currently have no badges saved to your filesystem";
+        if ( $total_badges_no === $saved_badges_no ) {
+            $saved_badges_message = "All {$total_badges_no} of your badges are currently saved to your filesystem at a size of <span class='thp-badges-size'>" . $badges_size . "</span>";
+        } elseif ( $saved_badges_no > 0 ) {
+            $saved_badges_message = "You currently have <span class='thp-saved-badges-no'>{$saved_badges_no}</span> out of <span class='thp-total-badges-no'>{$total_badges_no}</span> badges saved to your filesystem at a size of <span class='thp-badges-size'>{$badges_size}</span>";
+        }
+        echo '<p class="thp-saved-badges-message">';
+        echo $saved_badges_message;
+        echo '</p>';
+    }
+
     public function thp_display_settings_page() {
+        add_thickbox();
         ?>
+
+        <!-- Badge save overlay -->
+
+        <div id="thp-badge-save-modal" style="display: none;">
+            <div id="thp-badge-save-section">
+
+                <?php
+                $this->thp_render_badge_save_messages();
+                ?>
+
+                <label for="thp_badge_save_sizes">Size to save badges (px)</label>
+                <input type="number" name="thp_badge_save_sizes" id="thp_badge_save_sizes" value="<?php echo $this->get_badge_save_size(); ?>" min="0" max="300" />
+                <button id="thp_badges_save_submit" class="button button-primary">Save my badges!</button>
+                <div id="badgeFileList">
+                    <div id="progress">
+                        <div id="bar"></div>
+                    </div>
+                    <span id="noSaved"></span>
+                </div>
+            </div>
+
+            <div id="thp-badge-save-complete-section">
+                <p>Your badge save is complete!</p>
+            </div>
+        </div>	
 
         <form action="options.php" method="post">
 
@@ -383,10 +399,6 @@ class ThpSettings
             // Check if user data is in database
             // If it is, then create new user class from it
             if ( get_option( 'thp_user' ) ) {
-//                $thp_user       = get_option( 'thp_user' );
-//                $this->thp_user = new ThpUser( $thp_user, true );
-                $this->thp_user = ThpUser::get_instance();
-
                 $this->thp_display_options();
             } else {
                 settings_fields( 'thp_initial_settings_page' );
@@ -404,6 +416,11 @@ class ThpSettings
         add_options_page(
                 'Treehouse Plus - Options', 'Treehouse Plus', 'manage_options', 'treehouse-plus', array ( $this, 'thp_display_settings_page' )
         );
+    }
+    
+    public function get_badge_save_size() {
+        $badge_save_size = get_option( 'thp_save_badge_size' ) ? get_option( 'thp_save_badge_size' ) : 50;
+        return $badge_save_size;
     }
 
 }

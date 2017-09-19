@@ -138,6 +138,8 @@ label {
     width: 95%;
     height: 20px;
     border: 1px solid;
+    display: none;
+    margin-top: 1rem;
 }
 
 #badgeFileList #progress #bar {
@@ -146,5 +148,15 @@ label {
     background: red;
     -webkit-transition: width 0.5s;
     transition: width 0.5s;
+}
+
+#thp_badges_save_submit {
+    display: block;
+    clear: both;
+    margin-top: 1rem;
+}
+
+#thp-badge-save-complete-section {
+    display: none;
 }
 
