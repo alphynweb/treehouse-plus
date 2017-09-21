@@ -367,24 +367,24 @@ class ThpSettings
         // Establish whether any other badges or points etc have been earned since last visit.
         $thp_json_user = new ThpUser( $this->thp_user->get_profile_name() );
 
-        // Check for new badges
-        //$thp_old_badge_count = count( $this->thp_user->get_badge_list() );
-        $thp_new_badge_count  = count( $this->thp_user->get_badge_list() ) - count( $thp_json_user->get_badge_list() );
-        $t                    = $this->thp_user->get_total_points();
-        $u                    = $thp_json_user->get_total_points();
-        $thp_new_points_count = $this->thp_user->get_total_points() - $thp_json_user->get_total_points();
-
-        if ( $thp_new_badge_count > 0 ) {
-            if ( $thp_new_points_count > 0 ) {
-                $message = "You have earned {$thp_new_points_count} new points";
-                $type    = 'error';
-                add_settings_error( 'thp-new-points-earned', 'thp-new-points-earned', $message, $type );
-            } else {
-                $message = "You have earned {$thp_new_badge_count} new badges";
-                $type    = 'error';
-                add_settings_error( 'thp-new-badges-earned', 'thp-new-badges-earned', $message, $type );
-            }
+        // Check for new badges and points
+        $thp_new_badge_count  = count( $thp_json_user->get_badge_list() ) - count( $this->thp_user->get_badge_list() );
+        $thp_new_points_count = $thp_json_user->get_total_points() - $this->thp_user->get_total_points();
+        
+        if ( $thp_new_badge_count > 0 && $thp_new_points_count > 0 ) { // New badges and points earned
+            $message = "You have earned {$thp_new_points_count} new points and {$thp_new_badge_count} new badges";
+            $type    = 'error';
+            add_settings_error( 'thp-new-points-badges-earned', 'thp-new-points-badges-earned', $message, $type );
+        } elseif ( $thp_new_badge_count > 0 ) { // New badges earned
+            $message = "You have earned {$thp_new_badge_count} new badges";
+            $type    = 'error';
+            add_settings_error( 'thp-new-badges-earned', 'thp-new-badges-earned', $message, $type );
+        } elseif ( $thp_new_points_count > 0 ) { // New points earned
+            $message = "You have earned {$thp_new_points_count} new points and {$thp_new_badge_count} new badges";
+            $type    = 'error';
+            add_settings_error( 'thp-new-points-badges-earned', 'thp-new-points-badges-earned', $message, $type );
         }
+
         ?>
 
         <!-- Badge save overlay -->
