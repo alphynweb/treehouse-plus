@@ -19,10 +19,11 @@ class ThpUser
     protected $data;
     protected $error;
 
-    function __construct() {
+    function __construct( $profile_name = null ) {
         // Work out whether to use database or Treehouse initial JSON feed
+        // If profile name is sent through as an argument, it builds object from json feed using that name
         // If there is a user object stored in the database, use that, otherwise get info from JSON
-        if ( !isset( $_POST[ 'thp_profile_name' ] ) ) {
+        if ( !isset( $_POST[ 'thp_profile_name' ] ) && !isset( $profile_name ) ) {
             // Build user object from database
             if ( get_option( 'thp_user' ) ) {
                 $this->data = get_option( 'thp_user' );
@@ -43,13 +44,19 @@ class ThpUser
             // Check whether profile name is set in the $_POST array
             // If not, then exit
             if ( !isset( $_POST[ 'thp_profile_name' ] ) ) {
-                exit();
+                if ( !isset( $profile_name ) ) {
+                    exit();
+                } else {
+                    $thp_profile_name = $profile_name;
+                }
             }
             // If set, then get JSON data
-            $thp_profile_name = $_POST[ 'thp_profile_name' ];
-            $url              = 'http://teamtreehouse.com/' . $thp_profile_name . '.json';
-            $response         = wp_remote_get( $url );
-            $response_code    = wp_remote_retrieve_response_code( $response );
+            else {
+                $thp_profile_name = $_POST[ 'thp_profile_name' ];
+            }
+            $url           = 'http://teamtreehouse.com/' . $thp_profile_name . '.json';
+            $response      = wp_remote_get( $url );
+            $response_code = wp_remote_retrieve_response_code( $response );
 
             if ( $response_code == 200 ) {
                 // Json data for update successfully retrieved
@@ -421,7 +428,7 @@ class ThpUser
 
     public function get_profile_name() {
         return $this->profile_name;
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    }
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                }
 
     public function get_name() {
         return $this->name;
@@ -437,6 +444,10 @@ class ThpUser
 
     public function get_points_list() {
         return $this->points_list;
+    }
+
+    public function get_total_points() {
+        return $this->points_total->get_points();
     }
 
     public function get_saved_badges() {
@@ -456,7 +467,7 @@ class ThpUser
         }
         $saved_badges_info[ 'no_of_badges' ] = $saved_badges_no;
         if ( isset( $size ) ) {
-            $saved_badges_info[ 'size' ] = get_option('thp_save_badge_size') ? get_option('thp_save_badge_size') : 50;
+            $saved_badges_info[ 'size' ] = get_option( 'thp_save_badge_size' ) ? get_option( 'thp_save_badge_size' ) : 50;
         } else {
             $saved_badges_info[ 'size' ] = null;
         }
@@ -478,7 +489,7 @@ class ThpUser
         }
 
         $this->badge_list = $badges;
-        }
+                    }
 
     protected function set_points_list() {
         $points_arr       = [];

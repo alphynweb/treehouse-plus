@@ -364,6 +364,27 @@ class ThpSettings
 
     public function thp_display_settings_page() {
         add_thickbox();
+        // Establish whether any other badges or points etc have been earned since last visit.
+        $thp_json_user = new ThpUser( $this->thp_user->get_profile_name() );
+
+        // Check for new badges
+        //$thp_old_badge_count = count( $this->thp_user->get_badge_list() );
+        $thp_new_badge_count  = count( $this->thp_user->get_badge_list() ) - count( $thp_json_user->get_badge_list() );
+        $t                    = $this->thp_user->get_total_points();
+        $u                    = $thp_json_user->get_total_points();
+        $thp_new_points_count = $this->thp_user->get_total_points() - $thp_json_user->get_total_points();
+
+        if ( $thp_new_badge_count > 0 ) {
+            if ( $thp_new_points_count > 0 ) {
+                $message = "You have earned {$thp_new_points_count} new points";
+                $type    = 'error';
+                add_settings_error( 'thp-new-points-earned', 'thp-new-points-earned', $message, $type );
+            } else {
+                $message = "You have earned {$thp_new_badge_count} new badges";
+                $type    = 'error';
+                add_settings_error( 'thp-new-badges-earned', 'thp-new-badges-earned', $message, $type );
+            }
+        }
         ?>
 
         <!-- Badge save overlay -->
@@ -391,24 +412,24 @@ class ThpSettings
             </div>
         </div>	
 
-        <form action="options.php" method="post">
+        <div class="wrap">
+            <h1><?php _e( 'Treehouse Plus: Settings Page', 'treehouse-plus' ); ?></h1>
+            <?php settings_errors(); ?>
+            <form action="options.php" method="post">
 
-            <h1>Treehouse Plus: Settings Page</h1>
+                <?php
+                // Check if user data is in database
+                // If it is, then create new user class from it
+                if ( get_option( 'thp_user' ) ) {
+                    $this->thp_display_options();
+                } else {
+                    settings_fields( 'thp_initial_settings_page' );
+                    do_settings_sections( 'thp_initial_settings_page' );
+                }
+                ?>
+            </form>
+        </div> <!-- End wrap -->
 
-            <?php
-            // Check if user data is in database
-            // If it is, then create new user class from it
-            if ( get_option( 'thp_user' ) ) {
-                $this->thp_display_options();
-            } else {
-                settings_fields( 'thp_initial_settings_page' );
-                do_settings_sections( 'thp_initial_settings_page' );
-            }
-            ?>
-
-
-
-        </form>
         <?php
 }
 
@@ -417,7 +438,7 @@ class ThpSettings
                 'Treehouse Plus - Options', 'Treehouse Plus', 'manage_options', 'treehouse-plus', array ( $this, 'thp_display_settings_page' )
         );
     }
-    
+
     public function get_badge_save_size() {
         $badge_save_size = get_option( 'thp_save_badge_size' ) ? get_option( 'thp_save_badge_size' ) : 50;
         return $badge_save_size;
