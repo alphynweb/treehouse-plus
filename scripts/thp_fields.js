@@ -30,7 +30,7 @@ jQuery(document).ready(function ($) {
         var noSaved = 0;
         var badgePercent = 0;
         var badgeSize = $('#thp_badge_save_sizes').val();
-        var numberToSave = 5;
+        var numberToSave = badgeList.length;
         var totalBadgesNo = response['total_badges'];
         $('.thp-badges-size').html(badgeSize + "px");
         $('#badgeFileList #progress').show();
