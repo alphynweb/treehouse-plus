@@ -1,7 +1,6 @@
 jQuery(document).ready(function ($) {
 
     const badgeSize = $('#thp_badge_save_sizes').val();
-    const numberToSave = 5;
 
     function getBadgeList() {
         console.log("getBadgeList fired");
@@ -25,6 +24,7 @@ jQuery(document).ready(function ($) {
     }
 
     function saveBadges(badgeInfo) {
+        const numberToSave = 5;
         console.log("saveBadges fired");
         console.log(badgeInfo);
         const badgeList = badgeInfo['badges_to_save'];
