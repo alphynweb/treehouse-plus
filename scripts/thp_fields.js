@@ -75,6 +75,7 @@ jQuery(document).ready(function ($) {
 
     function displaySuccess() {
         $('#thp-badge-save-complete-section').css('display', 'block');
+        alert("Success");
     }
 
 
