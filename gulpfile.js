@@ -5,8 +5,12 @@ var concat = require('gulp-concat');
 gulp.task('babel', function() {
    gulp.src('./scripts/thp_fields.js')
            .pipe(babel())
-           .pipe(concat('thp_fields_test.js'))
+           .pipe(concat('main.js'))
            .pipe(gulp.dest('./scripts'));
+});
+
+gulp.task('watch', function() {
+    gulp.watch('./scripts/**/*.js', ['babel']);
 });
 
 gulp.task('default', function() {

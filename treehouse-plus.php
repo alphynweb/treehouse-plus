@@ -89,7 +89,7 @@ function thp_admin_styles_and_scripts( $hook_suffix ) {
         return;
     }
     wp_enqueue_script( 'bluebird', plugins_url( 'node_modules/bluebird/browser/bluebird.min.js', __FILE__ ) );
-    wp_enqueue_script( 'thp-fields', plugins_url( 'scripts/thp_fields_test.js', __FILE__ ) );
+    wp_enqueue_script( 'thp-fields', plugins_url( 'scripts/main.js', __FILE__ ) );
     wp_enqueue_script( 'thp-badge-save', plugins_url( 'scripts/thp_badge_save.js', __FILE__ ) );
     wp_register_script( 'google-charts-loader', 'https://www.gstatic.com/charts/loader.js' );
     wp_register_style( 'thp-treehouse', plugins_url( 'styles/admin-styles.css', __FILE__ ) );
