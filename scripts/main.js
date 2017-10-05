@@ -24,11 +24,11 @@ jQuery(document).ready(function ($) {
     }
 
     function saveBadges(badgeInfo) {
-        var numberToSave = 5;
         console.log("saveBadges fired");
         console.log(badgeInfo);
         var badgeList = badgeInfo['badges_to_save'];
         console.log("Saving " + badgeList.length + " badges");
+        var numberToSave = badgeList.length;
         var noSaved = 0;
         var badgePercent = 0;
         var totalBadgesNo = badgeInfo['total_badges'];
