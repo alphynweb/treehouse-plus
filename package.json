@@ -1,0 +1,45 @@
+{
+  "name": "treehouse-plus",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "babel": {
+    "presets": [
+      [
+        "env",
+        {
+          "targets": {
+            "browsers": [
+              "ie 10"
+            ]
+          }
+        }
+      ]
+    ]
+  },
+  "dependencies": {
+    "bluebird": "^3.5.0",
+    "npm": "^5.4.2"
+  },
+  "devDependencies": {
+    "babel-core": "^6.26.0",
+    "babel-preset-env": "^1.6.0",
+    "gulp": "^3.9.1",
+    "gulp-babel": "^7.0.0",
+    "gulp-concat": "^2.6.1",
+    "requirejs": "^2.3.5"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/alphynweb/treehouse-plus.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/alphynweb/treehouse-plus/issues"
+  },
+  "homepage": "https://github.com/alphynweb/treehouse-plus#readme"
+}

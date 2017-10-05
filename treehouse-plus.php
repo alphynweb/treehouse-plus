@@ -88,7 +88,8 @@ function thp_admin_styles_and_scripts( $hook_suffix ) {
     if ( $hook_suffix != 'settings_page_treehouse-plus' ) {
         return;
     }
-    wp_enqueue_script( 'thp-fields', plugins_url( 'scripts/thp_fields.js', __FILE__ ) );
+    wp_enqueue_script( 'bluebird', plugins_url( 'node_modules/bluebird/browser/bluebird.min.js', __FILE__ ) );
+    wp_enqueue_script( 'thp-fields', plugins_url( 'scripts/main.js', __FILE__ ) );
     wp_enqueue_script( 'thp-badge-save', plugins_url( 'scripts/thp_badge_save.js', __FILE__ ) );
     wp_register_script( 'google-charts-loader', 'https://www.gstatic.com/charts/loader.js' );
     wp_register_style( 'thp-treehouse', plugins_url( 'styles/admin-styles.css', __FILE__ ) );
@@ -119,7 +120,7 @@ function thp_get_badge_list() {
     $size = $_POST[ 'size' ];
     // Save badge size as option
     update_option( 'thp_save_badge_size', $size );
-    
+
     // Delete badges and folders from filesystem that aren't the right size
     $upload_dir         = wp_upload_dir();
     $user_badges_dir    = trailingslashit( $upload_dir[ 'basedir' ] . '/' . 'treehouse-plus-badges' );
@@ -160,12 +161,12 @@ function thp_get_badge_list() {
         }
     }
     $response = [
-        'total_badges' => count($badge_list),
+        'total_badges'   => count( $badge_list ),
         'badges_to_save' => $badge_list_info
     ];
     // Send list of badges to save via AJAX
     //echo json_encode( $badge_list_info );
-    echo json_encode($response);
+    echo json_encode( $response );
     wp_die();
 }
 
